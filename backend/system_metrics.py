@@ -23,7 +23,7 @@ logging.info(f"Running on {current_os}")
 
 # Initialize FastAPI app and configure CORS
 app = FastAPI()
-origins = ["http://localhost:3000", "https://soc-tool.vercel.app"]
+origins = ["http://localhost:3000", "https://soc-tool.vercel.app", "https://admin-soc-tool.vercel.app"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

@@ -130,7 +130,7 @@ function DeviceSelector({ onSelect }: { onSelect: (ip: string) => void }) {
   }, []);
 
   return (
-    <Card className="max-w-md mx-auto mb-6 shadow-md">
+    <Card>
     <CardHeader className="border-b pb-2">
       <CardTitle className="text-xl">Select Device</CardTitle>
       <CardDescription className="text-sm text-muted-foreground">
@@ -542,7 +542,9 @@ export default function SystemDashboard() {
             </CardContent>
           </Card>
           {/* Device Selection */}
-      <DeviceSelector onSelect={(ip) => setConnectionIP(ip)} />
+          <div className="flex flex-col space-y-2">
+            <DeviceSelector onSelect={(ip) => setConnectionIP(ip)} />
+          </div>
         </div>
       </main>
     </div>

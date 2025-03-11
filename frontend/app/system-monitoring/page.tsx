@@ -596,7 +596,7 @@ export default function SystemDashboard() {
               <TabsTrigger value="processes">Top Processes</TabsTrigger>
             </TabsList>
             <TabsContent value="overall">
-              <div className="h-[300px]">
+              <div className="relative w-full mb-8">
                 <ChartContainer>
                   <LineChart
                     data={cpuChartData}
@@ -662,7 +662,7 @@ export default function SystemDashboard() {
               </div>
             </TabsContent>
             <TabsContent value="cores">
-              <div className="h-[300px]">
+              <div className="relative w-full mb-8">
                 <ChartContainer>
                   <LineChart
                     data={coresChartData as any}
@@ -708,7 +708,7 @@ export default function SystemDashboard() {
             </TabsContent>
             <TabsContent value="processes">
               <div className="rounded-md border">
-                <div className="relative w-full overflow-auto">
+                <div className="relative w-full overflow-auto max-h-[400px]"> {/* Scrollable table */}
                   <table className="w-full caption-bottom text-sm">
                     <thead className="[&_tr]:border-b">
                       <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
@@ -734,7 +734,7 @@ export default function SystemDashboard() {
                         }
 
                         return processData.length > 0 ? (
-                          processData.slice(0, 10).map((proc) => (
+                          processData.map((proc) => ( // Removed slicing to show all processes
                             <tr key={proc.Id} className="border-b transition-colors hover:bg-muted/50">
                               <td className="p-2 align-middle">{proc.Id}</td>
                               <td className="p-2 align-middle font-medium">{proc.ProcessName}</td>
@@ -746,8 +746,7 @@ export default function SystemDashboard() {
                                       style={{ width: `${Math.min(proc.CPU, 100)}%` }}
                                     ></div>
                                   </div>
-                                  <span>{proc.CPU ? proc.CPU.toFixed(1) : "N/A"}%</span>
-
+                                  <span>{proc.CPU ? proc.CPU.toFixed(1) : "0"}%</span>
                                 </div>
                               </td>
                               <td className="p-2 align-middle">{(proc.WS / 1024 / 1024).toFixed(1)} MB</td>
@@ -772,6 +771,7 @@ export default function SystemDashboard() {
                 </div>
               </div>
             </TabsContent>
+
           </Tabs>
         </CardContent>
       </Card>

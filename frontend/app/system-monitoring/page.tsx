@@ -579,203 +579,232 @@ export default function SystemDashboard() {
         </Card>
       </div>
 
-      {/* CPU Usage Detail */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Cpu className="h-5 w-5 mr-2" />
-            CPU Performance
-          </CardTitle>
-          <CardDescription>Real-time CPU usage monitoring and process analysis</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="overall">
-            <TabsList className="mb-4">
-              <TabsTrigger value="overall">Overall Usage</TabsTrigger>
-              <TabsTrigger value="cores">Per Core</TabsTrigger>
-              <TabsTrigger value="processes">Top Processes</TabsTrigger>
-            </TabsList>
-            <TabsContent value="overall">
-              <div className="relative w-full mb-8">
-                <ChartContainer>
-                  <LineChart
-                    data={cpuChartData}
-                    xAxisDataKey="timestamp"
-                    series={[
-                      {
-                        dataKey: "value",
-                        label: "CPU Usage",
-                        color: "#3b82f6",
-                      },
-                    ]}
-                    yAxisWidth={40}
-                    showXAxis
-                    showYAxis
-                    showGrid
-                    showTooltip
-                    showLegend={false}
-                    xAxisFormatter={(value) => `${value}s`}
-                    yAxisFormatter={(value) => `${value.toFixed(0)}%`}
-                  />
-                </ChartContainer>
-              </div>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-muted/40">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Current Usage</p>
-                        <p className="text-2xl font-bold">{metrics.cpu_usage.toFixed(1)}%</p>
-                      </div>
-                      <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">
-                        <Cpu className="h-6 w-6 text-primary" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="bg-muted/40">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Core Count</p>
-                        <p className="text-2xl font-bold">{metrics.per_core_usage.length}</p>
-                      </div>
-                      <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">
-                        <Server className="h-6 w-6 text-primary" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="bg-muted/40">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">Active Processes</p>
-                        <p className="text-2xl font-bold">{metrics.top_cpu_processes.length}</p>
-                      </div>
-                      <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">
-                        <Activity className="h-6 w-6 text-primary" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-            <TabsContent value="cores">
-              <div className="relative w-full mb-8">
-                <ChartContainer>
-                  <LineChart
-                    data={coresChartData as any}
-                    xAxisDataKey="timestamp"
-                    series={coreHistory.map((_, index) => ({
-                      dataKey: `core${index}`,
-                      label: `Core ${index + 1}`,
-                      color: `hsl(${index * 30}, 70%, 50%)`,
-                      valueFormatter: (value: number) => `${value.toFixed(1)}%`,
-                    }))}
-                    yAxisWidth={40}
-                    showXAxis
-                    showYAxis
-                    showGrid
-                    showTooltip
-                    showLegend
-                    xAxisFormatter={(value) => `${value}s`}
-                    yAxisFormatter={(value) => `${value.toFixed(0)}%`}
-                  />
-                </ChartContainer>
-              </div>
-              <div className="mt-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {metrics.per_core_usage.map((usage, index) => (
-                  <Card key={index} className="bg-muted/40">
-                    <CardContent className="p-3">
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs font-medium text-muted-foreground">Core {index + 1}</p>
-                          <Badge variant="outline" className="text-xs">
-                            {usage.toFixed(1)}%
-                          </Badge>
-                        </div>
-                        <Progress
-                          value={usage}
-                          className="h-1.5"
-                          indicatorClassName={`bg-[hsl(${index * 30},70%,50%)]`}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="processes">
-              <div className="rounded-md border">
-                <div className="relative w-full overflow-auto max-h-[400px]"> {/* Scrollable table */}
-                  <table className="w-full caption-bottom text-sm">
-                    <thead className="[&_tr]:border-b">
-                      <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                        <th className="h-10 px-2 text-left align-middle font-medium">PID</th>
-                        <th className="h-10 px-2 text-left align-middle font-medium">Process Name</th>
-                        <th className="h-10 px-2 text-left align-middle font-medium">CPU %</th>
-                        <th className="h-10 px-2 text-left align-middle font-medium">Memory %</th>
-                        <th className="h-10 px-2 text-left align-middle font-medium">Handles</th>
-                        <th className="h-10 px-2 text-left align-middle font-medium">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="[&_tr:last-child]:border-0">
-                      {(() => {
-                        let processData: ProcessDetails[] = []
-                        if (typeof metrics.process_details === "string") {
-                          try {
-                            processData = JSON.parse(metrics.process_details || "[]")
-                          } catch (err) {
-                            console.error("Error parsing process details:", err)
-                          }
-                        } else if (Array.isArray(metrics.process_details)) {
-                          processData = metrics.process_details
-                        }
+{/* CPU Usage Detail */}
+<Card>
+  <CardHeader>
+    <CardTitle className="flex items-center">
+      <Cpu className="h-5 w-5 mr-2" />
+      CPU Performance
+    </CardTitle>
+    <CardDescription>
+      Real-time CPU usage monitoring and process analysis
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <Tabs defaultValue="overall">
+      <TabsList className="mb-4 flex flex-wrap">
+        <TabsTrigger value="overall" className="flex-1 min-w-[100px]">Overall Usage</TabsTrigger>
+        <TabsTrigger value="cores" className="flex-1 min-w-[100px]">Per Core</TabsTrigger>
+        <TabsTrigger value="processes" className="flex-1 min-w-[100px]">Processes</TabsTrigger>
+      </TabsList>
 
-                        return processData.length > 0 ? (
-                          processData.map((proc) => ( // Removed slicing to show all processes
-                            <tr key={proc.Id} className="border-b transition-colors hover:bg-muted/50">
-                              <td className="p-2 align-middle">{proc.Id}</td>
-                              <td className="p-2 align-middle font-medium">{proc.ProcessName}</td>
-                              <td className="p-2 align-middle">
-                                <div className="flex items-center">
-                                  <div className="w-16 bg-muted rounded-full h-2 mr-2">
-                                    <div
-                                      className="bg-blue-500 h-2 rounded-full"
-                                      style={{ width: `${Math.min(proc.CPU, 100)}%` }}
-                                    ></div>
-                                  </div>
-                                  <span>{proc.CPU ? proc.CPU.toFixed(1) : "0"}%</span>
-                                </div>
-                              </td>
-                              <td className="p-2 align-middle">{(proc.WS / 1024 / 1024).toFixed(1)} MB</td>
-                              <td className="p-2 align-middle">{proc.Handles}</td>
-                              <td className="p-2 align-middle">
-                                <Badge variant="outline" className="bg-green-500/10 text-green-500">
-                                  Running
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={6} className="p-4 text-center text-muted-foreground">
-                              No process data available
-                            </td>
-                          </tr>
-                        )
-                      })()}
-                    </tbody>
-                  </table>
+      {/* Overall Usage Tab */}
+      <TabsContent value="overall">
+        <div className="flex flex-col space-y-6">
+          {/* Chart Section */}
+          <div className="relative w-full">
+            <ChartContainer>
+              <LineChart
+                data={cpuChartData}
+                xAxisDataKey="timestamp"
+                series={[
+                  {
+                    dataKey: "value",
+                    label: "CPU Usage",
+                    color: "#3b82f6",
+                  },
+                ]}
+                yAxisWidth={40}
+                showXAxis
+                showYAxis
+                showGrid
+                showTooltip
+                showLegend={false}
+                xAxisFormatter={(value) => `${value}s`}
+                yAxisFormatter={(value) => `${value.toFixed(0)}%`}
+              />
+            </ChartContainer>
+          </div>
+
+          {/* Cards Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card className="bg-muted/40">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Current Usage
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {metrics.cpu_usage.toFixed(1)}%
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">
+                    <Cpu className="h-6 w-6 text-primary" />
+                  </div>
                 </div>
-              </div>
-            </TabsContent>
+              </CardContent>
+            </Card>
 
-          </Tabs>
-        </CardContent>
-      </Card>
+            <Card className="bg-muted/40">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Core Count
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {metrics.per_core_usage.length}
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">
+                    <Server className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
+            <Card className="bg-muted/40">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Active Processes
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {metrics.top_cpu_processes.length}
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">
+                    <Activity className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </TabsContent>
+
+      {/* Per Core Tab */}
+      <TabsContent value="cores">
+        <div className="relative w-full mb-6 md:mb-8 lg:mb-10">
+          <ChartContainer>
+            <LineChart
+              data={coresChartData}
+              xAxisDataKey="timestamp"
+              series={coreHistory.map((_, index) => ({
+                dataKey: `core${index}`,
+                label: `Core ${index + 1}`,
+                color: `hsl(${index * 30}, 70%, 50%)`,
+                valueFormatter: (value) => `${value.toFixed(1)}%`,
+              }))}
+              yAxisWidth={40}
+              showXAxis
+              showYAxis
+              showGrid
+              showTooltip
+              showLegend
+              xAxisFormatter={(value) => `${value}s`}
+              yAxisFormatter={(value) => `${value.toFixed(0)}%`}
+            />
+          </ChartContainer>
+        </div>
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+          {metrics.per_core_usage.map((usage, index) => (
+            <Card key={index} className="bg-muted/40">
+              <CardContent className="p-3">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Core {index + 1}
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      {usage.toFixed(1)}%
+                    </Badge>
+                  </div>
+                  <Progress
+                    value={usage}
+                    className="h-1.5"
+                    indicatorClassName={`bg-[hsl(${index * 30},70%,50%)]`}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </TabsContent>
+
+      {/* Top Processes Tab */}
+      <TabsContent value="processes">
+        <div className="rounded-md border">
+          <div className="relative w-full overflow-auto max-h-[400px]">
+            <table className="w-full caption-bottom text-sm">
+              <thead className="[&_tr]:border-b">
+                <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <th className="h-10 px-2 text-left align-middle font-medium">PID</th>
+                  <th className="h-10 px-2 text-left align-middle font-medium">Process Name</th>
+                  <th className="h-10 px-2 text-left align-middle font-medium">CPU %</th>
+                  <th className="h-10 px-2 text-left align-middle font-medium">Memory %</th>
+                  <th className="h-10 px-2 text-left align-middle font-medium">Handles</th>
+                  <th className="h-10 px-2 text-left align-middle font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody className="[&_tr:last-child]:border-0">
+                {(() => {
+                  let processData = [];
+                  if (typeof metrics.process_details === "string") {
+                    try {
+                      processData = JSON.parse(metrics.process_details || "[]");
+                    } catch (err) {
+                      console.error("Error parsing process details:", err);
+                    }
+                  } else if (Array.isArray(metrics.process_details)) {
+                    processData = metrics.process_details;
+                  }
+
+                  return processData.length > 0 ? (
+                    processData.map((proc) => (
+                      <tr key={proc.Id} className="border-b transition-colors hover:bg-muted/50">
+                        <td className="p-2 align-middle">{proc.Id}</td>
+                        <td className="p-2 align-middle font-medium">{proc.ProcessName}</td>
+                        <td className="p-2 align-middle">
+                          <div className="flex items-center">
+                            <div className="w-16 bg-muted rounded-full h-2 mr-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full"
+                                style={{ width: `${Math.min(proc.CPU, 100)}%` }}
+                              ></div>
+                            </div>
+                            <span>{proc.CPU ? proc.CPU.toFixed(1) : "0"}%</span>
+                          </div>
+                        </td>
+                        <td className="p-2 align-middle">
+                          {(proc.WS / 1024 / 1024).toFixed(1)} MB
+                        </td>
+                        <td className="p-2 align-middle">{proc.Handles}</td>
+                        <td className="p-2 align-middle">
+                          <Badge variant="outline" className="bg-green-500/10 text-green-500">
+                            Running
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="p-4 text-center text-muted-foreground">
+                        No process data available
+                      </td>
+                    </tr>
+                  );
+                })()}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
+  </CardContent>
+</Card>
       {/* Memory and Network Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Memory Card */}
@@ -996,7 +1025,7 @@ export default function SystemDashboard() {
       </Card>
 
       {/* Footer with last updated info */}
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-muted-foreground text-center sm:text-left gap-2">
         <div>
           <span>Connected to: {connectionIP}</span>
           {lastUpdated && <span> • Last updated: {lastUpdated}</span>}

@@ -56,6 +56,67 @@ const protocolColors: Record<string, string> = {
   UDP: "bg-[#CCFFFF] text-black dark:bg-cyan-800 dark:text-white",
   TLS: "bg-[#CCFFF2] text-black dark:bg-teal-800 dark:text-white",
   "TLS V1.2": "bg-[#CCFFFC] text-black dark:bg-emerald-800 dark:text-white",
+  POP3: "bg-[#FFE5CC] text-black dark:bg-orange-800 dark:text-white",
+  POP3S: "bg-[#FFDEB3] text-black dark:bg-amber-800 dark:text-white",
+  IMAP: "bg-[#ECCEFF] text-black dark:bg-violet-800 dark:text-white",
+  IMAPS: "bg-[#E0CCFF] text-black dark:bg-purple-900 dark:text-white",
+  SMTP: "bg-[#FEF08A] text-black dark:bg-yellow-700 dark:text-white",
+  TELNET: "bg-[#F9FFCC] text-black dark:bg-lime-800 dark:text-white",
+  LDAP: "bg-[#D1FAE5] text-black dark:bg-green-700 dark:text-white",
+  LDAPS: "bg-[#A7F3D0] text-black dark:bg-emerald-700 dark:text-white",
+  PPTP: "bg-[#FFCCE8] text-black dark:bg-pink-700 dark:text-white",
+  RDP: "bg-[#FFDDDD] text-black dark:bg-red-700 dark:text-white",
+  VNC: "bg-[#FFB3B3] text-black dark:bg-red-600 dark:text-white",
+  RTMP: "bg-[#B3D1FF] text-black dark:bg-blue-700 dark:text-white",
+  XMPP: "bg-[#B8CCFF] text-black dark:bg-blue-600 dark:text-white",
+  IRC: "bg-[#CCE9FF] text-black dark:bg-sky-700 dark:text-white",
+  NNTP: "bg-[#F3CCFF] text-black dark:bg-fuchsia-700 dark:text-white",
+  SNMP: "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
+  DHCP: "bg-[#FFF0CC] text-black dark:bg-amber-700 dark:text-white",
+  MDNS: "bg-[#FFB3D9] text-black dark:bg-pink-600 dark:text-white",
+  LLMNR: "bg-[#EACCFF] text-black dark:bg-violet-700 dark:text-white",
+  NBNS: "bg-[#EFEFEF] text-black dark:bg-gray-500 dark:text-white",
+  NTP: "bg-[#CCEFFF] text-black dark:bg-sky-600 dark:text-white",
+  SIP: "bg-[#B3FFE7] text-black dark:bg-teal-600 dark:text-white",
+  RTP: "bg-[#B3FFC2] text-black dark:bg-green-600 dark:text-white",
+  RTCP: "bg-[#C2FFB3] text-black dark:bg-lime-600 dark:text-white",
+  COAP: "bg-[#FFF7CC] text-black dark:bg-yellow-600 dark:text-white",
+  SFLOW: "bg-[#CCF5FF] text-black dark:bg-cyan-600 dark:text-white",
+  NETFLOW: "bg-[#B3E0FF] text-black dark:bg-blue-500 dark:text-white",
+  GTP: "bg-[#E0FFCC] text-black dark:bg-lime-700 dark:text-white",
+  RADIUS: "bg-[#D9FFCC] text-black dark:bg-green-700 dark:text-white",
+  IPV4: "bg-[#FFC9CC] text-black dark:bg-red-500 dark:text-white",
+  IPV6: "bg-[#FFF0B3] text-black dark:bg-yellow-500 dark:text-white",
+  VLAN: "bg-[#CCFFED] text-black dark:bg-emerald-600 dark:text-white",
+  QUIC: "bg-[#FFDECC] text-black dark:bg-orange-600 dark:text-white",
+  MQTT: "bg-[#FFD6CC] text-black dark:bg-orange-500 dark:text-white",
+  SMB: "bg-[#CCF2FF] text-black dark:bg-sky-500 dark:text-white",
+  NETBIOS: "bg-[#CCFFE0] text-black dark:bg-emerald-500 dark:text-white",
+  "SQL SERVER": "bg-[#FFCCD6] text-black dark:bg-pink-500 dark:text-white",
+  MYSQL: "bg-[#D6CCFF] text-black dark:bg-violet-600 dark:text-white",
+  POSTGRESQL: "bg-[#CCFFD6] text-black dark:bg-green-500 dark:text-white",
+  "ORACLE DB": "bg-[#FFE0CC] text-black dark:bg-orange-500 dark:text-white",
+  REDIS: "bg-[#FFCCE0] text-black dark:bg-pink-500 dark:text-white",
+  MONGODB: "bg-[#E0FFCC] text-black dark:bg-lime-500 dark:text-white",
+  ELASTICSEARCH: "bg-[#CCE0FF] text-black dark:bg-blue-500 dark:text-white",
+  MEMCACHED: "bg-[#FFCCD9] text-black dark:bg-pink-500 dark:text-white",
+  NFS: "bg-[#D9FFCC] text-black dark:bg-lime-500 dark:text-white",
+  KERBEROS: "bg-[#CCFFDB] text-black dark:bg-emerald-500 dark:text-white",
+  SIPS: "bg-[#DBCCFF] text-black dark:bg-violet-500 dark:text-white",
+  TFTP: "bg-[#FFCCF5] text-black dark:bg-fuchsia-500 dark:text-white",
+  SYSLOG: "bg-[#F5CCFF] text-black dark:bg-fuchsia-600 dark:text-white",
+  ICMPV6: "bg-[#CCF5FF] text-black dark:bg-cyan-500 dark:text-white",
+  "IPsec (ESP)": "bg-[#FFCCE0] text-black dark:bg-pink-600 dark:text-white",
+  "IPsec (AH)": "bg-[#E0CCFF] text-black dark:bg-violet-600 dark:text-white",
+  OSPF: "bg-[#CCFFE0] text-black dark:bg-emerald-600 dark:text-white",
+  BGP: "bg-[#E0FFCC] text-black dark:bg-lime-600 dark:text-white",
+  SCTP: "bg-[#CCFFDB] text-black dark:bg-emerald-600 dark:text-white",
+  DCCP: "bg-[#DBCCFF] text-black dark:bg-violet-600 dark:text-white",
+  "Layer 2 Protocol": "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
+  "Unknown Layer 2 Protocol": "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
+  "Unresolved Protocol": "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
+  Unknown: "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
+  Raw: "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
 }
 
 // Protocol color mapping for chart
@@ -71,151 +132,68 @@ const protocolColorMapping: Record<string, string> = {
   UDP: "#CCFFFF",
   TLS: "#CCFFF2",
   "TLS V1.2": "#CCFFFC",
+  POP3: "#FFE5CC",
+  POP3S: "#FFDEB3",
+  IMAP: "#ECCEFF",
+  IMAPS: "#E0CCFF",
+  SMTP: "#FEF08A",
+  TELNET: "#F9FFCC",
+  LDAP: "#D1FAE5",
+  LDAPS: "#A7F3D0",
+  PPTP: "#FFCCE8",
+  RDP: "#FFDDDD",
+  VNC: "#FFB3B3",
+  RTMP: "#B3D1FF",
+  XMPP: "#B8CCFF",
+  IRC: "#CCE9FF",
+  NNTP: "#F3CCFF",
+  SNMP: "#EDEDED",
+  DHCP: "#FFF0CC",
+  MDNS: "#FFB3D9",
+  LLMNR: "#EACCFF",
+  NBNS: "#EFEFEF",
+  NTP: "#CCEFFF",
+  SIP: "#B3FFE7",
+  RTP: "#B3FFC2",
+  RTCP: "#C2FFB3",
+  COAP: "#FFF7CC",
+  SFLOW: "#CCF5FF",
+  NETFLOW: "#B3E0FF",
+  GTP: "#E0FFCC",
+  RADIUS: "#D9FFCC",
+  IPV4: "#FFC9CC",
+  IPV6: "#FFF0B3",
+  VLAN: "#CCFFED",
+  QUIC: "#FFDECC",
+  MQTT: "#FFD6CC",
+  SMB: "#CCF2FF",
+  NETBIOS: "#CCFFE0",
+  "SQL SERVER": "#FFCCD6",
+  MYSQL: "#D6CCFF",
+  POSTGRESQL: "#CCFFD6",
+  "ORACLE DB": "#FFE0CC",
+  REDIS: "#FFCCE0",
+  MONGODB: "#E0FFCC",
+  ELASTICSEARCH: "#CCE0FF",
+  MEMCACHED: "#FFCCD9",
+  NFS: "#D9FFCC",
+  KERBEROS: "#CCFFDB",
+  SIPS: "#DBCCFF",
+  TFTP: "#FFCCF5",
+  SYSLOG: "#F5CCFF",
+  ICMPV6: "#CCF5FF",
+  "IPsec (ESP)": "#FFCCE0",
+  "IPsec (AH)": "#E0CCFF",
+  OSPF: "#CCFFE0",
+  BGP: "#E0FFCC",
+  SCTP: "#CCFFDB",
+  DCCP: "#DBCCFF",
+  "Layer 2 Protocol": "#EDEDED",
+  "Unknown Layer 2 Protocol": "#EDEDED",
+  "Unresolved Protocol": "#EDEDED",
+  Unknown: "#EDEDED",
+  Raw: "#EDEDED",
 }
-
-// Mock data for demonstration
-const mockPackets = [
-  [
-    1,
-    "12:30:45",
-    "128",
-    "192.168.1.1",
-    "00:1A:2B:3C:4D:5E",
-    "8080",
-    "192.168.1.2",
-    "00:1A:2B:3C:4D:5F",
-    "80",
-    "HTTP",
-    "GET /index.html",
-    "HTTP GET Request",
-  ],
-  [
-    2,
-    "12:30:46",
-    "256",
-    "192.168.1.2",
-    "00:1A:2B:3C:4D:5F",
-    "80",
-    "192.168.1.1",
-    "00:1A:2B:3C:4D:5E",
-    "8080",
-    "HTTP",
-    "200 OK",
-    "HTTP Response",
-  ],
-  [
-    3,
-    "12:30:47",
-    "64",
-    "192.168.1.3",
-    "00:1A:2B:3C:4D:60",
-    "443",
-    "192.168.1.4",
-    "00:1A:2B:3C:4D:61",
-    "443",
-    "HTTPS",
-    "TLS Handshake",
-    "TLS Client Hello",
-  ],
-  [
-    4,
-    "12:30:48",
-    "96",
-    "192.168.1.4",
-    "00:1A:2B:3C:4D:61",
-    "443",
-    "192.168.1.3",
-    "00:1A:2B:3C:4D:60",
-    "443",
-    "HTTPS",
-    "TLS Handshake",
-    "TLS Server Hello",
-  ],
-  [
-    5,
-    "12:30:49",
-    "48",
-    "192.168.1.5",
-    "00:1A:2B:3C:4D:62",
-    "53",
-    "8.8.8.8",
-    "00:1A:2B:3C:4D:63",
-    "53",
-    "DNS",
-    "Query",
-    "DNS Query for example.com",
-  ],
-  [
-    6,
-    "12:30:50",
-    "64",
-    "8.8.8.8",
-    "00:1A:2B:3C:4D:63",
-    "53",
-    "192.168.1.5",
-    "00:1A:2B:3C:4D:62",
-    "53",
-    "DNS",
-    "Response",
-    "DNS Response for example.com",
-  ],
-  [
-    7,
-    "12:30:51",
-    "42",
-    "192.168.1.6",
-    "00:1A:2B:3C:4D:64",
-    "0",
-    "192.168.1.255",
-    "FF:FF:FF:FF:FF:FF",
-    "0",
-    "ARP",
-    "Who has 192.168.1.7",
-    "ARP Request",
-  ],
-  [
-    8,
-    "12:30:52",
-    "42",
-    "192.168.1.7",
-    "00:1A:2B:3C:4D:65",
-    "0",
-    "192.168.1.6",
-    "00:1A:2B:3C:4D:64",
-    "0",
-    "ARP",
-    "192.168.1.7 is at 00:1A:2B:3C:4D:65",
-    "ARP Response",
-  ],
-  [
-    9,
-    "12:30:53",
-    "84",
-    "192.168.1.8",
-    "00:1A:2B:3C:4D:66",
-    "0",
-    "192.168.1.9",
-    "00:1A:2B:3C:4D:67",
-    "0",
-    "ICMP",
-    "Echo request",
-    "Ping Request",
-  ],
-  [
-    10,
-    "12:30:54",
-    "84",
-    "192.168.1.9",
-    "00:1A:2B:3C:4D:67",
-    "0",
-    "192.168.1.8",
-    "00:1A:2B:3C:4D:66",
-    "0",
-    "ICMP",
-    "Echo reply",
-    "Ping Response",
-  ],
-]
 
 interface Packet {
   id: number
@@ -230,10 +208,10 @@ interface Packet {
   protocol: string
   details: string
   info: string
+  detailedInfo?: string
 }
 
 export default function PacketAnalyzer() {
-  // State variables
   const [packets, setPackets] = useState<Packet[]>([])
   const [filteredPackets, setFilteredPackets] = useState<Packet[]>([])
   const [capturing, setCapturing] = useState(false)
@@ -264,7 +242,6 @@ export default function PacketAnalyzer() {
     direction: "ascending" | "descending"
   }>({ key: null, direction: "ascending" })
 
-  // Refs
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<HTMLCanvasElement>(null)
   const chartInstance = useRef<any>(null)
@@ -272,26 +249,14 @@ export default function PacketAnalyzer() {
   const captureIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const statsIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Load mock data on component mount
+  // Force dark mode on component mount
   useEffect(() => {
-    const formattedPackets = mockPackets.map((p) => ({
-      id: p[0] as number,
-      time: p[1] as string,
-      length: p[2] as string,
-      sourceIp: p[3] as string,
-      sourceMac: p[4] as string,
-      sourcePort: p[5] as string,
-      destIp: p[6] as string,
-      destMac: p[7] as string,
-      destPort: p[8] as string,
-      protocol: p[9] as string,
-      details: p[10] as string,
-      info: p[11] as string,
-    }))
-    setPackets(formattedPackets)
-    setFilteredPackets(formattedPackets)
+    document.documentElement.classList.add("dark")
+    localStorage.setItem("theme", "dark")
+  }, [])
 
-    // Clean up any existing event source on unmount
+  // Clean up event source and intervals on unmount
+  useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close()
@@ -317,35 +282,47 @@ export default function PacketAnalyzer() {
     }
   }, [filteredPackets, capturing])
 
-  // Function to get row color classes based on protocol
+  // Load Chart.js dynamically
+  useEffect(() => {
+    const loadChartJs = async () => {
+      if (!window.Chart) {
+        const script = document.createElement("script")
+        script.src = "https://cdn.jsdelivr.net/npm/chart.js"
+        script.async = true
+
+        // Create a promise to wait for script to load
+        const scriptLoaded = new Promise<void>((resolve) => {
+          script.onload = () => resolve()
+        })
+
+        document.body.appendChild(script)
+        await scriptLoaded
+        console.log("Chart.js loaded successfully")
+      }
+    }
+
+    loadChartJs()
+  }, [])
+
   const getRowColorClasses = (protocol: string) => {
     const normalized = protocol.toUpperCase()
     return protocolColors[normalized] ? protocolColors[normalized] : "bg-background text-foreground"
   }
 
-  // Function to show notification
   const showNotification = (message: string, type = "info") => {
     setNotification({ show: true, message, type })
-
-    // Auto-hide notification after 3 seconds
     setTimeout(() => {
       setNotification({ show: false, message: "", type: "info" })
     }, 3000)
   }
 
-  // Function to start packet capture
-  const startCapture = () => {
+  const startCapture = async () => {
     setError(null)
     setCapturing(true)
 
     try {
-      // In a real application, this would connect to your backend API
-      // For demo purposes, we'll simulate receiving packets
-
-      // Parse packet count limit if provided
       const limit = packetCount ? Number.parseInt(packetCount, 10) : null
 
-      // Set capture start time
       const startTime = new Date()
       setCaptureStats({
         totalPackets: 0,
@@ -354,7 +331,6 @@ export default function PacketAnalyzer() {
         packetsPerSecond: 0,
       })
 
-      // Start stats update interval
       statsIntervalRef.current = setInterval(() => {
         const now = new Date()
         const elapsedSeconds = Math.floor((now.getTime() - startTime.getTime()) / 1000)
@@ -368,52 +344,61 @@ export default function PacketAnalyzer() {
         }))
       }, 1000)
 
-      // Simulate receiving packets at intervals
-      captureIntervalRef.current = setInterval(() => {
-        // Generate a random packet
-        const newPacket: Packet = {
-          id: packets.length + 1,
-          time: new Date().toLocaleTimeString(),
-          length: Math.floor(Math.random() * 1500).toString(),
-          sourceIp: `192.168.1.${Math.floor(Math.random() * 255)}`,
-          sourceMac:
-            "00:1A:2B:3C:4D:" +
-            Math.floor(Math.random() * 100)
-              .toString(16)
-              .padStart(2, "0")
-              .toUpperCase(),
-          sourcePort: Math.floor(Math.random() * 65535).toString(),
-          destIp: `192.168.1.${Math.floor(Math.random() * 255)}`,
-          destMac:
-            "00:1A:2B:3C:4D:" +
-            Math.floor(Math.random() * 100)
-              .toString(16)
-              .padStart(2, "0")
-              .toUpperCase(),
-          destPort: Math.floor(Math.random() * 65535).toString(),
-          protocol: Object.keys(protocolColors)[Math.floor(Math.random() * Object.keys(protocolColors).length)],
-          details: "Simulated packet details",
-          info: "Simulated packet info",
-        }
-
-        setPackets((prev) => [...prev, newPacket])
-
-        // Check if we've reached the packet limit
-        if (limit && packets.length >= limit - 1) {
-          if (captureIntervalRef.current) clearInterval(captureIntervalRef.current)
-          if (statsIntervalRef.current) clearInterval(statsIntervalRef.current)
-          setCapturing(false)
-          showNotification(`Capture complete: ${limit} packets captured`, "success")
-        }
-      }, 1000)
-
-      // Store the interval ID for cleanup
-      eventSourceRef.current = {
-        close: () => {
-          if (captureIntervalRef.current) clearInterval(captureIntervalRef.current)
-          if (statsIntervalRef.current) clearInterval(statsIntervalRef.current)
+      // Start capture on the Flask backend
+      const response = await fetch("http://127.0.0.1:5000/api/capture/start", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      } as unknown as EventSource
+        body: JSON.stringify({ count: limit }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to start capture")
+      }
+
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+      }
+
+      // Connect to the Flask SSE endpoint
+      eventSourceRef.current = new EventSource("http://127.0.0.1:5000/stream")
+
+      eventSourceRef.current.onmessage = (event) => {
+        try {
+          const packetData = JSON.parse(event.data)
+          const newPacket: Packet = {
+            id: packetData[0],
+            time: packetData[1],
+            length: packetData[2].toString(),
+            sourceIp: packetData[3],
+            sourceMac: packetData[4],
+            sourcePort: packetData[5].toString(),
+            destIp: packetData[6],
+            destMac: packetData[7],
+            destPort: packetData[8].toString(),
+            protocol: packetData[9],
+            details: packetData[10],
+            info: packetData[11],
+          }
+
+          // Update the packets state
+          setPackets((prev) => [...prev, newPacket])
+
+          if (limit && packets.length >= limit - 1) {
+            stopCapture()
+            showNotification(`Capture complete: ${limit} packets captured`, "success")
+          }
+        } catch (err) {
+          console.error("Error parsing packet data:", err)
+        }
+      }
+
+      eventSourceRef.current.onerror = (err) => {
+        console.error("EventSource failed:", err)
+        stopCapture()
+        setError("Connection to packet stream failed")
+      }
 
       showNotification("Packet capture started", "success")
     } catch (err) {
@@ -423,8 +408,7 @@ export default function PacketAnalyzer() {
     }
   }
 
-  // Function to stop packet capture
-  const stopCapture = () => {
+  const stopCapture = async () => {
     if (eventSourceRef.current) {
       eventSourceRef.current.close()
       eventSourceRef.current = null
@@ -441,132 +425,93 @@ export default function PacketAnalyzer() {
     }
 
     setCapturing(false)
-    showNotification("Packet capture stopped", "info")
+
+    try {
+      await fetch("http://127.0.0.1:5000/api/capture/stop", { method: "POST" })
+      showNotification("Packet capture stopped", "info")
+    } catch (err) {
+      console.error("Error stopping capture:", err)
+    }
   }
 
-  // Function to save captured packets
   const saveCapture = () => {
     try {
-      // In a real application, this would call your backend API
-      // For demo purposes, we'll create a downloadable file
-
-      let content: string
-      let mimeType: string
-      let filename: string
-
-      switch (fileFormat) {
-        case "json":
-          content = JSON.stringify(packets, null, 2)
-          mimeType = "application/json"
-          filename = "packet-capture.json"
-          break
-        case "pcap":
-          // In a real app, this would be a binary file
-          content = "This would be a binary PCAP file in a real application"
-          mimeType = "application/octet-stream"
-          filename = "packet-capture.pcap"
-          break
-        case "pdf":
-          // In a real app, this would be a PDF file
-          content = "This would be a PDF file in a real application"
-          mimeType = "application/pdf"
-          filename = "packet-capture.pdf"
-          break
-        default:
-          content = JSON.stringify(packets, null, 2)
-          mimeType = "application/json"
-          filename = "packet-capture.json"
+      const url = `http://127.0.0.1:5000/api/capture/save/${fileFormat}?_=${Date.now()}`;
+      window.open(url, "_blank"); // Opens the file download in a new tab
+      showNotification(`Capture saved as packet-capture.${fileFormat}`, "success");
+    } catch (err) {
+      console.error("Error saving capture:", err);
+      setError("Failed to save capture");
+    }
+  };
+  
+  
+  const refreshDisplay = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/refresh", { method: "POST" })
+      if (!response.ok) {
+        throw new Error("Failed to refresh display")
       }
 
-      // Create a blob and download link
-      const blob = new Blob([content], { type: mimeType })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = filename
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      setPackets([])
+      setFilteredPackets([])
+      setError(null)
 
-      showNotification(`Capture saved as ${filename}`, "success")
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+        eventSourceRef.current = null
+      }
+
+      if (captureIntervalRef.current) {
+        clearInterval(captureIntervalRef.current)
+        captureIntervalRef.current = null
+      }
+
+      if (statsIntervalRef.current) {
+        clearInterval(statsIntervalRef.current)
+        statsIntervalRef.current = null
+      }
+
+      setCapturing(false)
+      setCaptureStats({
+        totalPackets: 0,
+        startTime: "",
+        elapsedTime: 0,
+        packetsPerSecond: 0,
+      })
+
+      showNotification("Display cleared", "info")
     } catch (err) {
-      console.error("Error saving capture:", err)
-      setError("Failed to save capture")
+      console.error("Error refreshing display:", err)
+      setError("Failed to refresh display")
     }
   }
 
-  // Function to refresh/clear the display
-  const refreshDisplay = () => {
-    setPackets([])
-    setFilteredPackets([])
-    setError(null)
-
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close()
-      eventSourceRef.current = null
-    }
-
-    if (captureIntervalRef.current) {
-      clearInterval(captureIntervalRef.current)
-      captureIntervalRef.current = null
-    }
-
-    if (statsIntervalRef.current) {
-      clearInterval(statsIntervalRef.current)
-      statsIntervalRef.current = null
-    }
-
-    setCapturing(false)
-    setCaptureStats({
-      totalPackets: 0,
-      startTime: "",
-      elapsedTime: 0,
-      packetsPerSecond: 0,
-    })
-
-    showNotification("Display cleared", "info")
-  }
-
-  // Function to apply filters and sorting
   const applyFilters = () => {
-    // First filter the packets
     const filtered = packets.filter((packet) => {
-      // IP filter (source or destination)
       const ipMatch = !filters.ip || packet.sourceIp.includes(filters.ip) || packet.destIp.includes(filters.ip)
-
-      // MAC filter (source or destination)
       const macMatch =
         !filters.mac ||
         packet.sourceMac.toLowerCase().includes(filters.mac.toLowerCase()) ||
         packet.destMac.toLowerCase().includes(filters.mac.toLowerCase())
-
-      // Protocol filter
       const protocolMatch = !filters.protocol || packet.protocol.toLowerCase().includes(filters.protocol.toLowerCase())
-
-      // Port filter (source or destination)
       const portMatch = !filters.port || packet.sourcePort === filters.port || packet.destPort === filters.port
-
-      // Length filter
       const lengthMatch = !filters.length || packet.length === filters.length
 
       return ipMatch && macMatch && protocolMatch && portMatch && lengthMatch
     })
 
-    // Then sort the filtered packets if a sort config is set
     if (sortConfig.key) {
       filtered.sort((a, b) => {
         const aValue = a[sortConfig.key as keyof Packet]
         const bValue = b[sortConfig.key as keyof Packet]
 
-        // Handle numeric values
         if (!isNaN(Number(aValue)) && !isNaN(Number(bValue))) {
           return sortConfig.direction === "ascending"
             ? Number(aValue) - Number(bValue)
             : Number(bValue) - Number(aValue)
         }
 
-        // Handle string values
         if (typeof aValue === "string" && typeof bValue === "string") {
           return sortConfig.direction === "ascending" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
         }
@@ -578,7 +523,6 @@ export default function PacketAnalyzer() {
     setFilteredPackets(filtered)
   }
 
-  // Function to handle column sorting
   const requestSort = (key: keyof Packet) => {
     let direction: "ascending" | "descending" = "ascending"
 
@@ -589,15 +533,6 @@ export default function PacketAnalyzer() {
     setSortConfig({ key, direction })
   }
 
-  // Function to get sort direction indicator
-  const getSortDirectionIndicator = (key: keyof Packet) => {
-    if (sortConfig.key !== key) {
-      return null
-    }
-    return sortConfig.direction === "ascending" ? "↑" : "↓"
-  }
-
-  // Function to reset filters
   const resetFilters = () => {
     setFilters({
       ip: "",
@@ -610,92 +545,131 @@ export default function PacketAnalyzer() {
     showNotification("Filters reset", "info")
   }
 
-  // Function to view packet details
-  const viewPacketDetails = (packet: Packet) => {
+  const viewPacketDetails = async (packet: Packet) => {
     setSelectedPacket(packet)
     setShowPacketDetails(true)
+
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/packet_detail/${packet.id}`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch packet details")
+      }
+
+      const data = await response.json()
+
+      // Update the selected packet with detailed info
+      setSelectedPacket((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            detailedInfo: data.detailed_info,
+          }
+        }
+        return prev
+      })
+    } catch (err) {
+      console.error("Error fetching packet details:", err)
+    }
   }
 
-  // Function to copy packet data to clipboard
   const copyPacketData = (packet: Packet) => {
     const data = JSON.stringify(packet, null, 2)
     navigator.clipboard.writeText(data)
     showNotification("Packet data copied to clipboard", "success")
   }
 
-  // Function to show statistics
-  const showStatistics = () => {
+  const showStatistics = async () => {
     setShowStatsModal(true)
 
-    // Use setTimeout to ensure the canvas is in the DOM
-    setTimeout(() => {
-      if (chartRef.current) {
-        // Destroy existing chart if it exists
-        if (chartInstance.current) {
-          chartInstance.current.destroy()
-        }
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/stats")
+      if (!response.ok) {
+        throw new Error("Failed to fetch statistics")
+      }
 
-        // Count protocols
-        const protocolCounts: Record<string, number> = {}
-        packets.forEach((packet) => {
-          const protocol = packet.protocol
-          protocolCounts[protocol] = (protocolCounts[protocol] || 0) + 1
+      const statsData = await response.json()
+
+      // Wait for Chart.js to be loaded
+      if (!window.Chart) {
+        await new Promise<void>((resolve) => {
+          const checkChart = () => {
+            if (window.Chart) {
+              resolve()
+            } else {
+              setTimeout(checkChart, 100)
+            }
+          }
+          checkChart()
         })
+      }
 
-        // Get protocol names and counts
-        const protocols = Object.keys(protocolCounts)
-        const counts = Object.values(protocolCounts)
+      // Render chart after a short delay to ensure the canvas is ready
+      setTimeout(() => {
+        if (chartRef.current) {
+          // Destroy existing chart if it exists
+          if (chartInstance.current) {
+            chartInstance.current.destroy()
+          }
 
-        // Create chart
-        const ctx = chartRef.current.getContext("2d")
-        if (ctx && window.Chart) {
-          chartInstance.current = new window.Chart(ctx, {
-            type: "pie",
-            data: {
-              labels: protocols,
-              datasets: [
-                {
-                  label: "Protocol Distribution",
-                  data: counts,
-                  backgroundColor: protocols.map((proto) => {
-                    const normalized = proto.toUpperCase()
-                    return protocolColorMapping[normalized] || "#ffffff"
-                  }),
-                  borderColor: "#ffffff",
-                  borderWidth: 2,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                tooltip: {
-                  callbacks: {
-                    label: (context: any) => {
-                      const label = context.label || ""
-                      const value = context.raw
-                      const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0)
-                      const percentage = ((value / total) * 100).toFixed(1) + "%"
-                      return `${label}: ${value} (${percentage})`
+          const protocols = Object.keys(statsData.protocol_counts)
+          const counts = Object.values(statsData.protocol_counts)
+
+          const ctx = chartRef.current.getContext("2d")
+          if (ctx && window.Chart) {
+            chartInstance.current = new window.Chart(ctx, {
+              type: "pie",
+              data: {
+                labels: protocols,
+                datasets: [
+                  {
+                    label: "Protocol Distribution",
+                    data: counts,
+                    backgroundColor: protocols.map((proto) => {
+                      const normalized = proto.toUpperCase()
+                      return protocolColorMapping[normalized] || "#ffffff"
+                    }),
+                    borderColor: "#ffffff",
+                    borderWidth: 2,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      label: (context: any) => {
+                        const label = context.label || ""
+                        const value = context.raw
+                        const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0)
+                        const percentage = ((value / total) * 100).toFixed(1) + "%"
+                        return `${label}: ${value} (${percentage})`
+                      },
                     },
                   },
-                },
-                legend: {
-                  position: "bottom",
-                },
-                title: {
-                  display: true,
-                  text: "Protocol Distribution",
+                  legend: {
+                    position: "bottom",
+                    labels: {
+                      color: "#ffffff",
+                    },
+                  },
+                  title: {
+                    display: true,
+                    text: "Protocol Distribution",
+                    color: "#ffffff",
+                  },
                 },
               },
-            },
-          })
-        } else {
-          console.error("Chart.js not loaded or canvas not available")
+            })
+          } else {
+            console.error("Chart.js not loaded or canvas not available")
+          }
         }
-      }
-    }, 100)
+      }, 200)
+    } catch (err) {
+      console.error("Error showing statistics:", err)
+    }
   }
 
   return (
@@ -709,7 +683,7 @@ export default function PacketAnalyzer() {
 
         {/* Capture Stats */}
         {capturing && (
-          <div className="flex items-center space-x-4 bg-primary/10 p-2 rounded-md">
+          <div className="flex flex-wrap items-center gap-2 bg-primary/10 p-2 rounded-md">
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">Status</span>
               <div className="flex items-center">
@@ -717,17 +691,17 @@ export default function PacketAnalyzer() {
                 <span className="font-medium">Capturing</span>
               </div>
             </div>
-            <Separator orientation="vertical" className="h-8" />
+            <Separator orientation="vertical" className="h-8 hidden sm:block" />
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">Packets</span>
               <span className="font-medium">{captureStats.totalPackets}</span>
             </div>
-            <Separator orientation="vertical" className="h-8" />
+            <Separator orientation="vertical" className="h-8 hidden sm:block" />
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">Time</span>
               <span className="font-medium">{captureStats.elapsedTime}s</span>
             </div>
-            <Separator orientation="vertical" className="h-8" />
+            <Separator orientation="vertical" className="h-8 hidden sm:block" />
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">Rate</span>
               <span className="font-medium">{captureStats.packetsPerSecond} pkt/s</span>
@@ -813,7 +787,7 @@ export default function PacketAnalyzer() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -963,7 +937,6 @@ export default function PacketAnalyzer() {
             value={filters.ip || filters.protocol || filters.port}
             onChange={(e) => {
               const value = e.target.value
-              // Try to determine what the user is filtering by
               if (value.includes(".")) {
                 setFilters({ ...filters, ip: value, protocol: "", port: "" })
               } else if (!isNaN(Number(value))) {
@@ -1001,7 +974,7 @@ export default function PacketAnalyzer() {
                 <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="max-h-[50vh] overflow-y-auto">
               {Object.keys(protocolColors)
                 .slice(5)
                 .map((protocol) => (
@@ -1028,7 +1001,11 @@ export default function PacketAnalyzer() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <div ref={tableContainerRef} className="overflow-auto max-h-[calc(100vh-400px)] rounded-md">
+          <div
+            ref={tableContainerRef}
+            className="overflow-auto rounded-md"
+            style={{ height: "calc(100vh - 300px)" }} // Further increased height
+          >
             <table className="w-full">
               <thead className="sticky top-0 bg-card z-10">
                 <tr>
@@ -1155,7 +1132,7 @@ export default function PacketAnalyzer() {
                     <SelectValue placeholder="Select protocol" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Protocols</SelectItem>
+                    <SelectItem value="all">All Protocols</SelectItem>
                     {Object.keys(protocolColors).map((protocol) => (
                       <SelectItem key={protocol} value={protocol}>
                         {protocol}
@@ -1205,7 +1182,7 @@ export default function PacketAnalyzer() {
 
       {/* Packet Details Modal */}
       <Dialog open={showPacketDetails} onOpenChange={setShowPacketDetails}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Badge className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}>
@@ -1216,13 +1193,13 @@ export default function PacketAnalyzer() {
             <DialogDescription>Detailed information and analysis of the selected network packet</DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 mt-4">
+          <ScrollArea className="flex-1 mt-4 h-[60vh]">
             {selectedPacket && (
               <Tabs defaultValue="formatted" className="w-full">
                 <TabsList className="mb-4 w-full justify-start">
                   <TabsTrigger value="formatted">Formatted View</TabsTrigger>
                   <TabsTrigger value="raw">Raw Data</TabsTrigger>
-                  <TabsTrigger value="hex">Hex Dump</TabsTrigger>
+                  <TabsTrigger value="hex">Detailed View</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="formatted" className="space-y-6">
@@ -1274,14 +1251,32 @@ export default function PacketAnalyzer() {
                           <dt className="font-medium">IP Address:</dt>
                           <dd className="flex items-center">
                             {selectedPacket.sourceIp}
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.sourceIp)
+                                showNotification("IP copied to clipboard", "success")
+                              }}
+                            >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </dd>
                           <dt className="font-medium">MAC Address:</dt>
                           <dd className="flex items-center">
                             {selectedPacket.sourceMac}
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.sourceMac)
+                                showNotification("MAC copied to clipboard", "success")
+                              }}
+                            >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </dd>
@@ -1300,14 +1295,32 @@ export default function PacketAnalyzer() {
                           <dt className="font-medium">IP Address:</dt>
                           <dd className="flex items-center">
                             {selectedPacket.destIp}
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.destIp)
+                                showNotification("IP copied to clipboard", "success")
+                              }}
+                            >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </dd>
                           <dt className="font-medium">MAC Address:</dt>
                           <dd className="flex items-center">
                             {selectedPacket.destMac}
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.destMac)
+                                showNotification("MAC copied to clipboard", "success")
+                              }}
+                            >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </dd>
@@ -1332,15 +1345,8 @@ export default function PacketAnalyzer() {
                 <TabsContent value="hex">
                   <Card>
                     <CardContent className="p-4">
-                      <pre className="bg-muted p-4 rounded-md overflow-auto text-xs font-mono">
-                        {`00000000  00 01 02 03 04 05 06 07  08 09 0A 0B 0C 0D 0E 0F  |................|
-00000010  10 11 12 13 14 15 16 17  18 19 1A 1B 1C 1D 1E 1F  |................|
-00000020  20 21 22 23 24 25 26 27  28 29 2A 2B 2C 2D 2E 2F  | !"#$%&'()*+,-./|
-00000030  30 31 32 33 34 35 36 37  38 39 3A 3B 3C 3D 3E 3F  |0123456789:;<=>?|
-00000040  40 41 42 43 44 45 46 47  48 49 4A 4B 4C 4D 4E 4F  |@ABCDEFGHIJKLMNO|
-00000050  50 51 52 53 54 55 56 57  58 59 5A 5B 5C 5D 5E 5F  |PQRSTUVWXYZ[\\]^_|
-00000060  60 61 62 63 64 65 66 67  68 69 6A 6B 6C 6D 6E 6F  |\`abcdefghijklmno|
-00000070  70 71 72 73 74 75 76 77  78 79 7A 7B 7C 7D 7E 7F  |pqrstuvwxyz{|}~.|`}
+                      <pre className="bg-muted p-4 rounded-md overflow-auto text-xs font-mono whitespace-pre">
+                        {selectedPacket.detailedInfo || "Loading detailed packet information..."}
                       </pre>
                     </CardContent>
                   </Card>
@@ -1354,7 +1360,7 @@ export default function PacketAnalyzer() {
               <span>Captured at {selectedPacket?.time}</span>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => copyPacketData(selectedPacket!)}>
+              <Button variant="outline" size="sm" onClick={() => selectedPacket && copyPacketData(selectedPacket)}>
                 <Copy className="mr-2 h-4 w-4" />
                 Copy Data
               </Button>
@@ -1367,91 +1373,93 @@ export default function PacketAnalyzer() {
         </DialogContent>
       </Dialog>
 
-      {/* Statistics Modal */}
-      <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Packet Analysis Statistics</DialogTitle>
-            <DialogDescription>Statistical breakdown of captured network traffic</DialogDescription>
-          </DialogHeader>
+    {/* Statistics Modal */}
+<Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
+  <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+    <DialogHeader className="shrink-0">
+      <DialogTitle>Packet Analysis Statistics</DialogTitle>
+      <DialogDescription>Statistical breakdown of captured network traffic</DialogDescription>
+    </DialogHeader>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Capture Summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-                  <dt className="font-medium">Total Packets:</dt>
-                  <dd>{packets.length}</dd>
-                  <dt className="font-medium">Start Time:</dt>
-                  <dd>{captureStats.startTime || "N/A"}</dd>
-                  <dt className="font-medium">Duration:</dt>
-                  <dd>{captureStats.elapsedTime > 0 ? `${captureStats.elapsedTime} seconds` : "N/A"}</dd>
-                  <dt className="font-medium">Average Rate:</dt>
-                  <dd>{captureStats.packetsPerSecond > 0 ? `${captureStats.packetsPerSecond} packets/sec` : "N/A"}</dd>
-                  <dt className="font-medium">Unique Protocols:</dt>
-                  <dd>{new Set(packets.map((p) => p.protocol)).size}</dd>
-                </dl>
-              </CardContent>
-            </Card>
+    {/* Scrollable content */}
+    <div className="flex-1 overflow-auto px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Capture Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+              <dt className="font-medium">Total Packets:</dt>
+              <dd>{packets.length}</dd>
+              <dt className="font-medium">Start Time:</dt>
+              <dd>{captureStats.startTime || "N/A"}</dd>
+              <dt className="font-medium">Duration:</dt>
+              <dd>{captureStats.elapsedTime > 0 ? `${captureStats.elapsedTime} seconds` : "N/A"}</dd>
+              <dt className="font-medium">Average Rate:</dt>
+              <dd>{captureStats.packetsPerSecond > 0 ? `${captureStats.packetsPerSecond} packets/sec` : "N/A"}</dd>
+              <dt className="font-medium">Unique Protocols:</dt>
+              <dd>{new Set(packets.map((p) => p.protocol)).size}</dd>
+            </dl>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Protocol Distribution</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[200px] relative">
-                <canvas ref={chartRef} className="w-full h-full"></canvas>
-              </CardContent>
-            </Card>
-          </div>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Protocol Distribution</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[300px] relative">
+            <canvas ref={chartRef} className="w-full h-full"></canvas>
+          </CardContent>
+        </Card>
+      </div>
 
-          <div className="flex-1 overflow-auto">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Protocol Breakdown</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className="text-left p-2">Protocol</th>
-                      <th className="text-left p-2">Count</th>
-                      <th className="text-left p-2">Percentage</th>
-                      <th className="text-left p-2">Avg. Size</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(
-                      packets.reduce(
-                        (acc, packet) => {
-                          const protocol = packet.protocol
-                          if (!acc[protocol]) {
-                            acc[protocol] = { count: 0, totalSize: 0 }
-                          }
-                          acc[protocol].count++
-                          acc[protocol].totalSize += Number.parseInt(packet.length, 10)
-                          return acc
-                        },
-                        {} as Record<string, { count: number; totalSize: number }>,
-                      ),
-                    ).map(([protocol, data]) => (
-                      <tr key={protocol}>
-                        <td className="p-2">
-                          <Badge className={getRowColorClasses(protocol)}>{protocol}</Badge>
-                        </td>
-                        <td className="p-2">{data.count}</td>
-                        <td className="p-2">{((data.count / packets.length) * 100).toFixed(1)}%</td>
-                        <td className="p-2">{Math.round(data.totalSize / data.count)} bytes</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Protocol Breakdown</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th className="text-left p-2">Protocol</th>
+                <th className="text-left p-2">Count</th>
+                <th className="text-left p-2">Percentage</th>
+                <th className="text-left p-2">Avg. Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(
+                packets.reduce(
+                  (acc, packet) => {
+                    const protocol = packet.protocol;
+                    if (!acc[protocol]) {
+                      acc[protocol] = { count: 0, totalSize: 0 };
+                    }
+                    acc[protocol].count++;
+                    acc[protocol].totalSize += Number.parseInt(packet.length, 10);
+                    return acc;
+                  },
+                  {} as Record<string, { count: number; totalSize: number }>
+                )
+              ).map(([protocol, data]) => (
+                <tr key={protocol}>
+                  <td className="p-2">
+                    <Badge className={getRowColorClasses(protocol)}>{protocol}</Badge>
+                  </td>
+                  <td className="p-2">{data.count}</td>
+                  <td className="p-2">{((data.count / packets.length) * 100).toFixed(1)}%</td>
+                  <td className="p-2">{Math.round(data.totalSize / data.count)} bytes</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </div>
+  </DialogContent>
+</Dialog>
+
 
       {/* Load Chart.js dynamically */}
       <script

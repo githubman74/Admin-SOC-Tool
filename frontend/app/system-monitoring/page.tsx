@@ -734,21 +734,21 @@ export default function SystemDashboard() {
         </div>
       </TabsContent>
 
-      {/* Top Processes Tab */}
+      {/* Processes Tab */}
       <TabsContent value="processes">
         <div className="rounded-md border">
           <div className="relative w-full overflow-auto max-h-[400px]">
             <table className="w-full caption-bottom text-sm">
-              <thead className="[&_tr]:border-b">
-                <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                  <th className="h-10 px-2 text-left align-middle font-medium">PID</th>
-                  <th className="h-10 px-2 text-left align-middle font-medium">Process Name</th>
-                  <th className="h-10 px-2 text-left align-middle font-medium">CPU %</th>
-                  <th className="h-10 px-2 text-left align-middle font-medium">Memory %</th>
-                  <th className="h-10 px-2 text-left align-middle font-medium">Handles</th>
-                  <th className="h-10 px-2 text-left align-middle font-medium">Status</th>
-                </tr>
-              </thead>
+            <thead className="sticky top-0 z-10 bg-black [&_tr]:border-b">
+      <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        <th className="h-10 px-2 text-left align-middle font-medium">PID</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">Process Name</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">CPU %</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">Memory %</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">Handles</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">Status</th>
+      </tr>
+    </thead>
               <tbody className="[&_tr:last-child]:border-0">
                 {(() => {
                   let processData = [];

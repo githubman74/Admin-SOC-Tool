@@ -159,6 +159,7 @@ backend/
 ├── system_metrics.py    # Main FastAPI application streaming system metrics
 ├── requirements.txt     # Python dependencies (if provided)
 └── README.md            # This file
+
 ```
 
 ### CORS Configuration

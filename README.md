@@ -3,7 +3,6 @@
 This full-stack project provides a real-time system monitoring dashboard. The application displays live system metrics—such as CPU usage (overall and per-core), memory usage, disk usage, and network statistics—using a FastAPI backend and a React/Next.js frontend. The backend streams metrics via Server-Sent Events (SSE) to be consumed and visualized by the frontend.
 
 ---
-
 ## Table of Contents
 
 - [Overview](#overview)

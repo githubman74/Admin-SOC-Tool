@@ -226,23 +226,23 @@ export default function PacketAnalyzer() {
   const eventSourceRef = useRef<EventSource | null>(null)
   const captureIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const statsIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  const [activeTab, setActiveTab] = useState("formatted");
-  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("formatted")
+  const [copied, setCopied] = useState(false)
 
   // Update copy function to set the button state to "Copied"
   const copyCurrentData = () => {
-    if (!selectedPacket) return;
-    let dataToCopy = "";
+    if (!selectedPacket) return
+    let dataToCopy = ""
     if (activeTab === "raw") {
-      dataToCopy = JSON.stringify(selectedPacket, null, 2);
+      dataToCopy = JSON.stringify(selectedPacket, null, 2)
     } else if (activeTab === "hex") {
-      dataToCopy = selectedPacket.detailedInfo || "Loading detailed packet information...";
+      dataToCopy = selectedPacket.detailedInfo || "Loading detailed packet information..."
     }
-    navigator.clipboard.writeText(dataToCopy);
-    setCopied(true);
-    showNotification("Data copied to clipboard", "success");
-    setTimeout(() => setCopied(false), 2000);
-  };
+    navigator.clipboard.writeText(dataToCopy)
+    setCopied(true)
+    showNotification("Data copied to clipboard", "success")
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   // Force dark mode on component mount
   useEffect(() => {
@@ -863,17 +863,16 @@ export default function PacketAnalyzer() {
               </TooltipProvider>
 
               <Button
-  variant="outline"
-  className="flex items-center"
-  onClick={() => {
-    setFileFormat("json");
-    saveCapture();
-  }}
->
-  <Save className="mr-2 h-4 w-4" />
-  Save As
-</Button>
-
+                variant="outline"
+                className="flex items-center"
+                onClick={() => {
+                  setFileFormat("json")
+                  saveCapture()
+                }}
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save As
+              </Button>
             </div>
           </div>
 
@@ -1143,51 +1142,49 @@ export default function PacketAnalyzer() {
 
       {/* Packet Details Modal */}
       <Dialog open={showPacketDetails} onOpenChange={setShowPacketDetails}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center">
-            <Badge className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}>
-              {selectedPacket?.protocol}
-            </Badge>
-            Packet #{selectedPacket?.id} Details
-          </DialogTitle>
-          <DialogDescription>
-            Detailed information and analysis of the selected network packet
-          </DialogDescription>
-        </DialogHeader>
+        <DialogContent className="max-w-5xl w-[90vw] max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Badge className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}>
+                {selectedPacket?.protocol}
+              </Badge>
+              Packet #{selectedPacket?.id} Details
+            </DialogTitle>
+            <DialogDescription>Detailed information and analysis of the selected network packet</DialogDescription>
+          </DialogHeader>
 
-        <ScrollArea className="flex-1 mt-4 h-[60vh]">
-          {selectedPacket && (
-            <Tabs defaultValue="formatted" className="w-full" onValueChange={(value) => setActiveTab(value)}>
-              <TabsList className="mb-4 w-full justify-start">
-                <TabsTrigger value="formatted">Formatted View</TabsTrigger>
-                <TabsTrigger value="raw">Raw Data</TabsTrigger>
-                <TabsTrigger value="hex">Detailed View</TabsTrigger>
-              </TabsList>
+          <div className="flex-1 mt-4 overflow-hidden">
+            {selectedPacket && (
+              <Tabs defaultValue="formatted" className="w-full" onValueChange={(value) => setActiveTab(value)}>
+                <TabsList className="mb-4 w-full justify-start overflow-x-auto">
+                  <TabsTrigger value="formatted">Formatted View</TabsTrigger>
+                  <TabsTrigger value="raw">Raw Data</TabsTrigger>
+                  <TabsTrigger value="hex">Detailed View</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="formatted" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Basic Information</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-                        <dt className="font-medium">Packet ID:</dt>
-                        <dd>{selectedPacket.id}</dd>
-                        <dt className="font-medium">Timestamp:</dt>
-                        <dd>{selectedPacket.time}</dd>
-                        <dt className="font-medium">Length:</dt>
-                        <dd>{selectedPacket.length} bytes</dd>
-                        <dt className="font-medium">Protocol:</dt>
-                        <dd>
-                          <Badge className={getRowColorClasses(selectedPacket.protocol)}>
-                            {selectedPacket.protocol}
-                          </Badge>
-                        </dd>
-                      </dl>
-                    </CardContent>
-                  </Card>
+                <TabsContent value="formatted" className="space-y-6 overflow-y-auto max-h-[50vh] pr-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Basic Information</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+                          <dt className="font-medium">Packet ID:</dt>
+                          <dd>{selectedPacket.id}</dd>
+                          <dt className="font-medium">Timestamp:</dt>
+                          <dd>{selectedPacket.time}</dd>
+                          <dt className="font-medium">Length:</dt>
+                          <dd>{selectedPacket.length} bytes</dd>
+                          <dt className="font-medium">Protocol:</dt>
+                          <dd>
+                            <Badge className={getRowColorClasses(selectedPacket.protocol)}>
+                              {selectedPacket.protocol}
+                            </Badge>
+                          </dd>
+                        </dl>
+                      </CardContent>
+                    </Card>
 
                     <Card>
                       <CardHeader className="pb-2">
@@ -1295,46 +1292,48 @@ export default function PacketAnalyzer() {
                   </div>
                 </TabsContent>
 
-              <TabsContent value="raw">
-                <Card>
-                  <CardContent className="p-4">
-                    {/* Added max-h to force scrollbars when content exceeds the height */}
-                    <pre className="bg-muted p-4 rounded-md overflow-x-auto overflow-y-auto text-xs font-mono whitespace-pre max-h-[40vh]">
-                      {JSON.stringify(selectedPacket, null, 2)}
-                    </pre>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                <TabsContent value="raw" className="overflow-hidden">
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="overflow-y-auto max-h-[50vh]">
+                        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs font-mono whitespace-pre">
+                          {JSON.stringify(selectedPacket, null, 2)}
+                        </pre>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-              <TabsContent value="hex">
-                <Card>
-                  <CardContent className="p-4">
-                    {/* Added max-h to force scrollbars when content exceeds the height */}
-                    <pre className="bg-muted p-4 rounded-md overflow-x-auto overflow-y-auto text-xs font-mono whitespace-pre max-h-[40vh]">
-                      {selectedPacket.detailedInfo || "Loading detailed packet information..."}
-                    </pre>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          )}
-        </ScrollArea>
-
-        <DialogFooter className="flex justify-between items-center mt-4">
-          <div className="flex items-center text-sm text-muted-foreground">
-            <span>Captured at {selectedPacket?.time}</span>
-          </div>
-          <div className="flex gap-2">
-            {activeTab !== "formatted" && (
-              <Button variant="outline" size="sm" onClick={copyCurrentData}>
-                <Copy className="mr-2 h-4 w-4" />
-                {copied ? "Copied" : "Copy Data"}
-              </Button>
+                <TabsContent value="hex" className="overflow-hidden">
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="overflow-y-auto max-h-[50vh]">
+                        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs font-mono whitespace-pre">
+                          {selectedPacket.detailedInfo || "Loading detailed packet information..."}
+                        </pre>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             )}
           </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+
+          <DialogFooter className="flex justify-between items-center mt-4">
+            <div className="flex items-center text-sm text-muted-foreground">
+              <span>Captured at {selectedPacket?.time}</span>
+            </div>
+            <div className="flex gap-2">
+              {activeTab !== "formatted" && (
+                <Button variant="outline" size="sm" onClick={copyCurrentData}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  {copied ? "Copied" : "Copy Data"}
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Statistics Modal */}
       <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>

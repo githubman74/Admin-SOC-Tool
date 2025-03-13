@@ -1006,9 +1006,9 @@ export default function PacketAnalyzer() {
             className="overflow-auto rounded-md"
             style={{ height: "calc(100vh - 300px)" }} // Further increased height
           >
-            <table className="w-full">
-              <thead className="sticky top-0 bg-card z-10">
-                <tr>
+            <table className="w-full border-separate border-spacing-0">
+              <thead className="sticky top-0 bg-card z-50">
+                <tr className="bg-card">
                   {[
                     { key: "id", label: "ID" },
                     { key: "time", label: "Time" },
@@ -1020,15 +1020,14 @@ export default function PacketAnalyzer() {
                     { key: "destMac", label: "Destination MAC" },
                     { key: "destPort", label: "Destination Port" },
                     { key: "protocol", label: "Protocol" },
-                    { key: "details", label: "Details" },
-                    { key: "info", label: "Info" },
                   ].map((column) => (
                     <th
                       key={column.key}
-                      className="p-2 border-b text-left font-medium text-sm cursor-pointer hover:bg-muted/50"
+                      className="py-4 px-2 border whitespace-nowrap text-center font-medium text-sm cursor-pointer hover:bg-muted/50 bg-card"
                       onClick={() => requestSort(column.key as keyof Packet)}
+                      style={{ zIndex: 50 }}
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         {column.label}
                         {sortConfig.key === column.key && (
                           <ArrowUpDown
@@ -1042,6 +1041,7 @@ export default function PacketAnalyzer() {
                   ))}
                 </tr>
               </thead>
+
               <tbody>
                 {filteredPackets.length === 0 ? (
                   <tr>
@@ -1058,32 +1058,28 @@ export default function PacketAnalyzer() {
                       className={`${getRowColorClasses(packet.protocol)} hover:brightness-95 dark:hover:brightness-125 transition-all cursor-pointer`}
                       onClick={() => viewPacketDetails(packet)}
                     >
-                      <td className="p-2 border-b">{packet.id}</td>
-                      <td className="p-2 border-b">{packet.time}</td>
-                      <td className="p-2 border-b">{packet.length}</td>
-                      <td className="p-2 border-b">{packet.sourceIp}</td>
-                      <td className="p-2 border-b">{packet.sourceMac}</td>
-                      <td className="p-2 border-b">{packet.sourcePort}</td>
-                      <td className="p-2 border-b">{packet.destIp}</td>
-                      <td className="p-2 border-b">{packet.destMac}</td>
-                      <td className="p-2 border-b">{packet.destPort}</td>
-                      <td className="p-2 border-b">
+                      <td className="p-2 border text-center">{packet.id}</td>
+                      <td className="p-2 border text-center whitespace-nowrap">{packet.time}</td>
+                      <td className="p-2 border text-center">{packet.length}</td>
+                      <td className="p-2 border text-center">{packet.sourceIp}</td>
+                      <td className="p-2 border text-center">{packet.sourceMac}</td>
+                      <td className="p-2 border text-center">{packet.sourcePort}</td>
+                      <td className="p-2 border text-center">{packet.destIp}</td>
+                      <td className="p-2 border text-center">{packet.destMac}</td>
+                      <td className="p-2 border text-center">{packet.destPort}</td>
+                      <td className="p-2 border text-center">
                         <Badge variant="outline" className={getRowColorClasses(packet.protocol)}>
                           {packet.protocol}
                         </Badge>
-                      </td>
-                      <td className="p-2 border-b">{packet.details}</td>
-                      <td className="p-2 border-b relative group">
-                        <div className="flex items-center justify-between">
-                          <span>{packet.info}</span>
-                          <Info className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
                       </td>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
+
+
+
           </div>
         </CardContent>
       </Card>

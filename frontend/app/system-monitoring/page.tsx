@@ -743,8 +743,8 @@ export default function SystemDashboard() {
       <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
         <th className="h-10 px-2 text-left align-middle font-medium">PID</th>
         <th className="h-10 px-2 text-left align-middle font-medium">Process Name</th>
-        <th className="h-10 px-2 text-left align-middle font-medium">CPU %</th>
-        <th className="h-10 px-2 text-left align-middle font-medium">Memory %</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">CPU (s)</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">Memory</th>
         <th className="h-10 px-2 text-left align-middle font-medium">Handles</th>
         <th className="h-10 px-2 text-left align-middle font-medium">Status</th>
       </tr>
@@ -768,16 +768,9 @@ export default function SystemDashboard() {
                         <td className="p-2 align-middle">{proc.Id}</td>
                         <td className="p-2 align-middle font-medium">{proc.ProcessName}</td>
                         <td className="p-2 align-middle">
-                          <div className="flex items-center">
-                            <div className="w-16 bg-muted rounded-full h-2 mr-2">
-                              <div
-                                className="bg-blue-500 h-2 rounded-full"
-                                style={{ width: `${Math.min(proc.CPU, 100)}%` }}
-                              ></div>
-                            </div>
-                            <span>{proc.CPU ? proc.CPU.toFixed(1) : "0"}%</span>
-                          </div>
-                        </td>
+  <span>{proc.CPU ? proc.CPU.toFixed(1) : "0"}</span>
+</td>
+
                         <td className="p-2 align-middle">
                           {(proc.WS / 1024 / 1024).toFixed(1)} MB
                         </td>

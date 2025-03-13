@@ -885,44 +885,18 @@ export default function PacketAnalyzer() {
                 </Tooltip>
               </TooltipProvider>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center">
-                    <Save className="mr-2 h-4 w-4" />
-                    Save As
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setFileFormat("json")
-                      saveCapture()
-                    }}
-                  >
-                    <FileJson className="mr-2 h-4 w-4" />
-                    <span>JSON Format</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setFileFormat("pcap")
-                      saveCapture()
-                    }}
-                  >
-                    <FileDown className="mr-2 h-4 w-4" />
-                    <span>PCAP Format</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setFileFormat("pdf")
-                      saveCapture()
-                    }}
-                  >
-                    <FilePdf className="mr-2 h-4 w-4" />
-                    <span>PDF Format</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+  variant="outline"
+  className="flex items-center"
+  onClick={() => {
+    setFileFormat("json");
+    saveCapture();
+  }}
+>
+  <Save className="mr-2 h-4 w-4" />
+  Save As
+</Button>
+
             </div>
           </div>
 
@@ -1194,14 +1168,11 @@ export default function PacketAnalyzer() {
       </Sheet>
 
       {/* Packet Details Modal */}
-          <Dialog open={showPacketDetails} onOpenChange={setShowPacketDetails}>
-      {/* Changed overflow-hidden to overflow-auto to allow scrolling */}
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto flex flex-col">
+      <Dialog open={showPacketDetails} onOpenChange={setShowPacketDetails}>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center">
-            <Badge
-              className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}
-            >
+            <Badge className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}>
               {selectedPacket?.protocol}
             </Badge>
             Packet #{selectedPacket?.id} Details
@@ -1211,22 +1182,15 @@ export default function PacketAnalyzer() {
           </DialogDescription>
         </DialogHeader>
 
-        {/* You can keep this ScrollArea if you still want an outer scroll,
-            but now it won't block horizontal scrolling in the Raw/Hex sections. */}
-        <ScrollArea className="flex-1 mt-4">
+        <ScrollArea className="flex-1 mt-4 h-[60vh]">
           {selectedPacket && (
-            <Tabs
-              defaultValue="formatted"
-              className="w-full"
-              onValueChange={(value) => setActiveTab(value)}
-            >
+            <Tabs defaultValue="formatted" className="w-full" onValueChange={(value) => setActiveTab(value)}>
               <TabsList className="mb-4 w-full justify-start">
                 <TabsTrigger value="formatted">Formatted View</TabsTrigger>
                 <TabsTrigger value="raw">Raw Data</TabsTrigger>
                 <TabsTrigger value="hex">Detailed View</TabsTrigger>
               </TabsList>
 
-              {/* --- FORMATTED VIEW --- */}
               <TabsContent value="formatted" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Card>
@@ -1357,23 +1321,22 @@ export default function PacketAnalyzer() {
                 </div>
               </TabsContent>
 
-              {/* --- RAW VIEW --- */}
               <TabsContent value="raw">
                 <Card>
-                  {/* max-h + overflow ensures a scrollable area both vertically & horizontally */}
-                  <CardContent className="p-4 max-h-[40vh] overflow-x-auto overflow-y-auto">
-                    <pre className="bg-muted p-4 rounded-md text-xs font-mono whitespace-pre min-w-full">
+                  <CardContent className="p-4">
+                    {/* Added max-h to force scrollbars when content exceeds the height */}
+                    <pre className="bg-muted p-4 rounded-md overflow-x-auto overflow-y-auto text-xs font-mono whitespace-pre max-h-[40vh]">
                       {JSON.stringify(selectedPacket, null, 2)}
                     </pre>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              {/* --- DETAILED (HEX) VIEW --- */}
               <TabsContent value="hex">
                 <Card>
-                  <CardContent className="p-4 max-h-[40vh] overflow-x-auto overflow-y-auto">
-                    <pre className="bg-muted p-4 rounded-md text-xs font-mono whitespace-pre min-w-full">
+                  <CardContent className="p-4">
+                    {/* Added max-h to force scrollbars when content exceeds the height */}
+                    <pre className="bg-muted p-4 rounded-md overflow-x-auto overflow-y-auto text-xs font-mono whitespace-pre max-h-[40vh]">
                       {selectedPacket.detailedInfo || "Loading detailed packet information..."}
                     </pre>
                   </CardContent>
@@ -1398,6 +1361,7 @@ export default function PacketAnalyzer() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
     {/* Statistics Modal */}
 <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
   <DialogContent className="max-w-4xl h-[90vh] flex flex-col">

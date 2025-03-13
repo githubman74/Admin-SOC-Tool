@@ -27,21 +27,15 @@ import {
   Play,
   Square,
   BarChart4,
-  Info,
   Palette,
   ChevronDown,
   Search,
   X,
   ArrowUpDown,
-  ExternalLink,
   Copy,
-  FileJson,
-  FileDown,
-  FileIcon as FilePdf,
 } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 // Protocol color mapping
 const protocolColors: Record<string, string> = {
@@ -92,14 +86,6 @@ const protocolColors: Record<string, string> = {
   MQTT: "bg-[#FFD6CC] text-black dark:bg-orange-500 dark:text-white",
   SMB: "bg-[#CCF2FF] text-black dark:bg-sky-500 dark:text-white",
   NETBIOS: "bg-[#CCFFE0] text-black dark:bg-emerald-500 dark:text-white",
-  "SQL SERVER": "bg-[#FFCCD6] text-black dark:bg-pink-500 dark:text-white",
-  MYSQL: "bg-[#D6CCFF] text-black dark:bg-violet-600 dark:text-white",
-  POSTGRESQL: "bg-[#CCFFD6] text-black dark:bg-green-500 dark:text-white",
-  "ORACLE DB": "bg-[#FFE0CC] text-black dark:bg-orange-500 dark:text-white",
-  REDIS: "bg-[#FFCCE0] text-black dark:bg-pink-500 dark:text-white",
-  MONGODB: "bg-[#E0FFCC] text-black dark:bg-lime-500 dark:text-white",
-  ELASTICSEARCH: "bg-[#CCE0FF] text-black dark:bg-blue-500 dark:text-white",
-  MEMCACHED: "bg-[#FFCCD9] text-black dark:bg-pink-500 dark:text-white",
   NFS: "bg-[#D9FFCC] text-black dark:bg-lime-500 dark:text-white",
   KERBEROS: "bg-[#CCFFDB] text-black dark:bg-emerald-500 dark:text-white",
   SIPS: "bg-[#DBCCFF] text-black dark:bg-violet-500 dark:text-white",
@@ -168,14 +154,6 @@ const protocolColorMapping: Record<string, string> = {
   MQTT: "#FFD6CC",
   SMB: "#CCF2FF",
   NETBIOS: "#CCFFE0",
-  "SQL SERVER": "#FFCCD6",
-  MYSQL: "#D6CCFF",
-  POSTGRESQL: "#CCFFD6",
-  "ORACLE DB": "#FFE0CC",
-  REDIS: "#FFCCE0",
-  MONGODB: "#E0FFCC",
-  ELASTICSEARCH: "#CCE0FF",
-  MEMCACHED: "#FFCCD9",
   NFS: "#D9FFCC",
   KERBEROS: "#CCFFDB",
   SIPS: "#DBCCFF",
@@ -248,6 +226,23 @@ export default function PacketAnalyzer() {
   const eventSourceRef = useRef<EventSource | null>(null)
   const captureIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const statsIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [activeTab, setActiveTab] = useState("formatted")
+  const [copied, setCopied] = useState(false)
+
+  // Update copy function to set the button state to "Copied"
+  const copyCurrentData = () => {
+    if (!selectedPacket) return
+    let dataToCopy = ""
+    if (activeTab === "raw") {
+      dataToCopy = JSON.stringify(selectedPacket, null, 2)
+    } else if (activeTab === "hex") {
+      dataToCopy = selectedPacket.detailedInfo || "Loading detailed packet information..."
+    }
+    navigator.clipboard.writeText(dataToCopy)
+    setCopied(true)
+    showNotification("Data copied to clipboard", "success")
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   // Force dark mode on component mount
   useEffect(() => {
@@ -436,16 +431,15 @@ export default function PacketAnalyzer() {
 
   const saveCapture = () => {
     try {
-      const url = `http://127.0.0.1:5000/api/capture/save/${fileFormat}?_=${Date.now()}`;
-      window.open(url, "_blank"); // Opens the file download in a new tab
-      showNotification(`Capture saved as packet-capture.${fileFormat}`, "success");
+      const url = `http://127.0.0.1:5000/api/capture/save/${fileFormat}?_=${Date.now()}`
+      window.open(url, "_blank") // Opens the file download in a new tab
+      showNotification(`Capture saved as packet-capture.${fileFormat}`, "success")
     } catch (err) {
-      console.error("Error saving capture:", err);
-      setError("Failed to save capture");
+      console.error("Error saving capture:", err)
+      setError("Failed to save capture")
     }
-  };
-  
-  
+  }
+
   const refreshDisplay = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/refresh", { method: "POST" })
@@ -673,11 +667,11 @@ export default function PacketAnalyzer() {
   }
 
   return (
-    <div className="container py-6 space-y-6">
+    <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Page Header */}
       <div className="flex flex-col space-y-2 md:flex-row md:justify-between md:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Network Packet Analyzer</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Network Packet Analyzer</h1>
           <p className="text-muted-foreground">Capture, analyze, and inspect network traffic in real-time</p>
         </div>
 
@@ -868,44 +862,17 @@ export default function PacketAnalyzer() {
                 </Tooltip>
               </TooltipProvider>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center">
-                    <Save className="mr-2 h-4 w-4" />
-                    Save As
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setFileFormat("json")
-                      saveCapture()
-                    }}
-                  >
-                    <FileJson className="mr-2 h-4 w-4" />
-                    <span>JSON Format</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setFileFormat("pcap")
-                      saveCapture()
-                    }}
-                  >
-                    <FileDown className="mr-2 h-4 w-4" />
-                    <span>PCAP Format</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setFileFormat("pdf")
-                      saveCapture()
-                    }}
-                  >
-                    <FilePdf className="mr-2 h-4 w-4" />
-                    <span>PDF Format</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant="outline"
+                className="flex items-center"
+                onClick={() => {
+                  setFileFormat("json")
+                  saveCapture()
+                }}
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save As
+              </Button>
             </div>
           </div>
 
@@ -1006,9 +973,9 @@ export default function PacketAnalyzer() {
             className="overflow-auto rounded-md"
             style={{ height: "calc(100vh - 300px)" }} // Further increased height
           >
-            <table className="w-full">
-              <thead className="sticky top-0 bg-card z-10">
-                <tr>
+            <table className="w-full border-separate border-spacing-0">
+              <thead className="sticky top-0 bg-card z-50">
+                <tr className="bg-card">
                   {[
                     { key: "id", label: "ID" },
                     { key: "time", label: "Time" },
@@ -1020,15 +987,14 @@ export default function PacketAnalyzer() {
                     { key: "destMac", label: "Destination MAC" },
                     { key: "destPort", label: "Destination Port" },
                     { key: "protocol", label: "Protocol" },
-                    { key: "details", label: "Details" },
-                    { key: "info", label: "Info" },
                   ].map((column) => (
                     <th
                       key={column.key}
-                      className="p-2 border-b text-left font-medium text-sm cursor-pointer hover:bg-muted/50"
+                      className="py-4 px-2 border whitespace-nowrap text-center font-medium text-sm cursor-pointer hover:bg-muted/50 bg-card"
                       onClick={() => requestSort(column.key as keyof Packet)}
+                      style={{ zIndex: 50 }}
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         {column.label}
                         {sortConfig.key === column.key && (
                           <ArrowUpDown
@@ -1042,6 +1008,7 @@ export default function PacketAnalyzer() {
                   ))}
                 </tr>
               </thead>
+
               <tbody>
                 {filteredPackets.length === 0 ? (
                   <tr>
@@ -1058,26 +1025,19 @@ export default function PacketAnalyzer() {
                       className={`${getRowColorClasses(packet.protocol)} hover:brightness-95 dark:hover:brightness-125 transition-all cursor-pointer`}
                       onClick={() => viewPacketDetails(packet)}
                     >
-                      <td className="p-2 border-b">{packet.id}</td>
-                      <td className="p-2 border-b">{packet.time}</td>
-                      <td className="p-2 border-b">{packet.length}</td>
-                      <td className="p-2 border-b">{packet.sourceIp}</td>
-                      <td className="p-2 border-b">{packet.sourceMac}</td>
-                      <td className="p-2 border-b">{packet.sourcePort}</td>
-                      <td className="p-2 border-b">{packet.destIp}</td>
-                      <td className="p-2 border-b">{packet.destMac}</td>
-                      <td className="p-2 border-b">{packet.destPort}</td>
-                      <td className="p-2 border-b">
+                      <td className="p-2 border text-center">{packet.id}</td>
+                      <td className="p-2 border text-center whitespace-nowrap">{packet.time}</td>
+                      <td className="p-2 border text-center">{packet.length}</td>
+                      <td className="p-2 border text-center">{packet.sourceIp}</td>
+                      <td className="p-2 border text-center">{packet.sourceMac}</td>
+                      <td className="p-2 border text-center">{packet.sourcePort}</td>
+                      <td className="p-2 border text-center">{packet.destIp}</td>
+                      <td className="p-2 border text-center">{packet.destMac}</td>
+                      <td className="p-2 border text-center">{packet.destPort}</td>
+                      <td className="p-2 border text-center">
                         <Badge variant="outline" className={getRowColorClasses(packet.protocol)}>
                           {packet.protocol}
                         </Badge>
-                      </td>
-                      <td className="p-2 border-b">{packet.details}</td>
-                      <td className="p-2 border-b relative group">
-                        <div className="flex items-center justify-between">
-                          <span>{packet.info}</span>
-                          <Info className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
                       </td>
                     </tr>
                   ))
@@ -1182,7 +1142,7 @@ export default function PacketAnalyzer() {
 
       {/* Packet Details Modal */}
       <Dialog open={showPacketDetails} onOpenChange={setShowPacketDetails}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-w-5xl w-[90vw] max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Badge className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}>
@@ -1193,16 +1153,16 @@ export default function PacketAnalyzer() {
             <DialogDescription>Detailed information and analysis of the selected network packet</DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 mt-4 h-[60vh]">
+          <div className="flex-1 mt-4 overflow-hidden">
             {selectedPacket && (
-              <Tabs defaultValue="formatted" className="w-full">
-                <TabsList className="mb-4 w-full justify-start">
+              <Tabs defaultValue="formatted" className="w-full" onValueChange={(value) => setActiveTab(value)}>
+                <TabsList className="mb-4 w-full justify-start overflow-x-auto">
                   <TabsTrigger value="formatted">Formatted View</TabsTrigger>
                   <TabsTrigger value="raw">Raw Data</TabsTrigger>
                   <TabsTrigger value="hex">Detailed View</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="formatted" className="space-y-6">
+                <TabsContent value="formatted" className="space-y-6 overflow-y-auto max-h-[50vh] pr-2">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
                       <CardHeader className="pb-2">
@@ -1332,134 +1292,138 @@ export default function PacketAnalyzer() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="raw">
+                <TabsContent value="raw" className="overflow-hidden">
                   <Card>
                     <CardContent className="p-4">
-                      <pre className="bg-muted p-4 rounded-md overflow-auto text-xs font-mono whitespace-pre">
-                        {JSON.stringify(selectedPacket, null, 2)}
-                      </pre>
+                      <div className="overflow-y-auto max-h-[50vh]">
+                        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs font-mono whitespace-pre">
+                          {JSON.stringify(selectedPacket, null, 2)}
+                        </pre>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
 
-                <TabsContent value="hex">
+                <TabsContent value="hex" className="overflow-hidden">
                   <Card>
                     <CardContent className="p-4">
-                      <pre className="bg-muted p-4 rounded-md overflow-auto text-xs font-mono whitespace-pre">
-                        {selectedPacket.detailedInfo || "Loading detailed packet information..."}
-                      </pre>
+                      <div className="overflow-y-auto max-h-[50vh]">
+                        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs font-mono whitespace-pre">
+                          {selectedPacket.detailedInfo || "Loading detailed packet information..."}
+                        </pre>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
               </Tabs>
             )}
-          </ScrollArea>
+          </div>
 
           <DialogFooter className="flex justify-between items-center mt-4">
             <div className="flex items-center text-sm text-muted-foreground">
               <span>Captured at {selectedPacket?.time}</span>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => selectedPacket && copyPacketData(selectedPacket)}>
-                <Copy className="mr-2 h-4 w-4" />
-                Copy Data
-              </Button>
-              <Button size="sm">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Analyze Further
-              </Button>
+              {activeTab !== "formatted" && (
+                <Button variant="outline" size="sm" onClick={copyCurrentData}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  {copied ? "Copied" : "Copy Data"}
+                </Button>
+              )}
             </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-    {/* Statistics Modal */}
-<Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
-  <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
-    <DialogHeader className="shrink-0">
-      <DialogTitle>Packet Analysis Statistics</DialogTitle>
-      <DialogDescription>Statistical breakdown of captured network traffic</DialogDescription>
-    </DialogHeader>
+      {/* Statistics Modal */}
+      <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
+        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] flex flex-col">
+          <DialogHeader className="shrink-0">
+            <DialogTitle>Packet Analysis Statistics</DialogTitle>
+            <DialogDescription>Statistical breakdown of captured network traffic</DialogDescription>
+          </DialogHeader>
 
-    {/* Scrollable content */}
-    <div className="flex-1 overflow-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Capture Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-              <dt className="font-medium">Total Packets:</dt>
-              <dd>{packets.length}</dd>
-              <dt className="font-medium">Start Time:</dt>
-              <dd>{captureStats.startTime || "N/A"}</dd>
-              <dt className="font-medium">Duration:</dt>
-              <dd>{captureStats.elapsedTime > 0 ? `${captureStats.elapsedTime} seconds` : "N/A"}</dd>
-              <dt className="font-medium">Average Rate:</dt>
-              <dd>{captureStats.packetsPerSecond > 0 ? `${captureStats.packetsPerSecond} packets/sec` : "N/A"}</dd>
-              <dt className="font-medium">Unique Protocols:</dt>
-              <dd>{new Set(packets.map((p) => p.protocol)).size}</dd>
-            </dl>
-          </CardContent>
-        </Card>
+          <div className="flex-1 overflow-y-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Capture Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+                    <dt className="font-medium">Total Packets:</dt>
+                    <dd>{packets.length}</dd>
+                    <dt className="font-medium">Start Time:</dt>
+                    <dd>{captureStats.startTime || "N/A"}</dd>
+                    <dt className="font-medium">Duration:</dt>
+                    <dd>{captureStats.elapsedTime > 0 ? `${captureStats.elapsedTime} seconds` : "N/A"}</dd>
+                    <dt className="font-medium">Average Rate:</dt>
+                    <dd>
+                      {captureStats.packetsPerSecond > 0 ? `${captureStats.packetsPerSecond} packets/sec` : "N/A"}
+                    </dd>
+                    <dt className="font-medium">Unique Protocols:</dt>
+                    <dd>{new Set(packets.map((p) => p.protocol)).size}</dd>
+                  </dl>
+                </CardContent>
+              </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Protocol Distribution</CardTitle>
-          </CardHeader>
-          <CardContent className="h-[300px] relative">
-            <canvas ref={chartRef} className="w-full h-full"></canvas>
-          </CardContent>
-        </Card>
-      </div>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Protocol Distribution</CardTitle>
+                </CardHeader>
+                <CardContent className="h-[300px] relative">
+                  <canvas ref={chartRef} className="w-full h-full"></canvas>
+                </CardContent>
+              </Card>
+            </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Protocol Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th className="text-left p-2">Protocol</th>
-                <th className="text-left p-2">Count</th>
-                <th className="text-left p-2">Percentage</th>
-                <th className="text-left p-2">Avg. Size</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(
-                packets.reduce(
-                  (acc, packet) => {
-                    const protocol = packet.protocol;
-                    if (!acc[protocol]) {
-                      acc[protocol] = { count: 0, totalSize: 0 };
-                    }
-                    acc[protocol].count++;
-                    acc[protocol].totalSize += Number.parseInt(packet.length, 10);
-                    return acc;
-                  },
-                  {} as Record<string, { count: number; totalSize: number }>
-                )
-              ).map(([protocol, data]) => (
-                <tr key={protocol}>
-                  <td className="p-2">
-                    <Badge className={getRowColorClasses(protocol)}>{protocol}</Badge>
-                  </td>
-                  <td className="p-2">{data.count}</td>
-                  <td className="p-2">{((data.count / packets.length) * 100).toFixed(1)}%</td>
-                  <td className="p-2">{Math.round(data.totalSize / data.count)} bytes</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-    </div>
-  </DialogContent>
-</Dialog>
-
+            <Card className="mb-6">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Protocol Breakdown</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr>
+                        <th className="text-left p-2">Protocol</th>
+                        <th className="text-left p-2">Count</th>
+                        <th className="text-left p-2">Percentage</th>
+                        <th className="text-left p-2">Avg. Size</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(
+                        packets.reduce(
+                          (acc, packet) => {
+                            const protocol = packet.protocol
+                            if (!acc[protocol]) {
+                              acc[protocol] = { count: 0, totalSize: 0 }
+                            }
+                            acc[protocol].count++
+                            acc[protocol].totalSize += Number.parseInt(packet.length, 10)
+                            return acc
+                          },
+                          {} as Record<string, { count: number; totalSize: number }>,
+                        ),
+                      ).map(([protocol, data]) => (
+                        <tr key={protocol}>
+                          <td className="p-2">
+                            <Badge className={getRowColorClasses(protocol)}>{protocol}</Badge>
+                          </td>
+                          <td className="p-2">{data.count}</td>
+                          <td className="p-2">{((data.count / packets.length) * 100).toFixed(1)}%</td>
+                          <td className="p-2">{Math.round(data.totalSize / data.count)} bytes</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Load Chart.js dynamically */}
       <script

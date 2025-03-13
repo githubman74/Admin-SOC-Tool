@@ -27,21 +27,15 @@ import {
   Play,
   Square,
   BarChart4,
-  Info,
   Palette,
   ChevronDown,
   Search,
   X,
   ArrowUpDown,
-  ExternalLink,
   Copy,
-  FileJson,
-  FileDown,
-  FileIcon as FilePdf,
 } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 // Protocol color mapping
 const protocolColors: Record<string, string> = {
@@ -109,8 +103,7 @@ const protocolColors: Record<string, string> = {
   "Unresolved Protocol": "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
   Unknown: "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
   Raw: "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
-};
-
+}
 
 // Protocol color mapping for chart
 const protocolColorMapping: Record<string, string> = {
@@ -178,8 +171,7 @@ const protocolColorMapping: Record<string, string> = {
   "Unresolved Protocol": "#EDEDED",
   Unknown: "#EDEDED",
   Raw: "#EDEDED",
-};
-
+}
 
 interface Packet {
   id: number
@@ -234,23 +226,23 @@ export default function PacketAnalyzer() {
   const eventSourceRef = useRef<EventSource | null>(null)
   const captureIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const statsIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  const [activeTab, setActiveTab] = useState("formatted");
-  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("formatted")
+  const [copied, setCopied] = useState(false)
 
   // Update copy function to set the button state to "Copied"
   const copyCurrentData = () => {
-    if (!selectedPacket) return;
-    let dataToCopy = "";
+    if (!selectedPacket) return
+    let dataToCopy = ""
     if (activeTab === "raw") {
-      dataToCopy = JSON.stringify(selectedPacket, null, 2);
+      dataToCopy = JSON.stringify(selectedPacket, null, 2)
     } else if (activeTab === "hex") {
-      dataToCopy = selectedPacket.detailedInfo || "Loading detailed packet information...";
+      dataToCopy = selectedPacket.detailedInfo || "Loading detailed packet information..."
     }
-    navigator.clipboard.writeText(dataToCopy);
-    setCopied(true);
-    showNotification("Data copied to clipboard", "success");
-    setTimeout(() => setCopied(false), 2000);
-  };
+    navigator.clipboard.writeText(dataToCopy)
+    setCopied(true)
+    showNotification("Data copied to clipboard", "success")
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   // Force dark mode on component mount
   useEffect(() => {
@@ -439,16 +431,15 @@ export default function PacketAnalyzer() {
 
   const saveCapture = () => {
     try {
-      const url = `http://127.0.0.1:5000/api/capture/save/${fileFormat}?_=${Date.now()}`;
-      window.open(url, "_blank"); // Opens the file download in a new tab
-      showNotification(`Capture saved as packet-capture.${fileFormat}`, "success");
+      const url = `http://127.0.0.1:5000/api/capture/save/${fileFormat}?_=${Date.now()}`
+      window.open(url, "_blank") // Opens the file download in a new tab
+      showNotification(`Capture saved as packet-capture.${fileFormat}`, "success")
     } catch (err) {
-      console.error("Error saving capture:", err);
-      setError("Failed to save capture");
+      console.error("Error saving capture:", err)
+      setError("Failed to save capture")
     }
-  };
-  
-  
+  }
+
   const refreshDisplay = async () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/refresh", { method: "POST" })
@@ -676,11 +667,11 @@ export default function PacketAnalyzer() {
   }
 
   return (
-    <div className="container py-6 space-y-6">
+    <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Page Header */}
       <div className="flex flex-col space-y-2 md:flex-row md:justify-between md:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Network Packet Analyzer</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Network Packet Analyzer</h1>
           <p className="text-muted-foreground">Capture, analyze, and inspect network traffic in real-time</p>
         </div>
 
@@ -872,17 +863,16 @@ export default function PacketAnalyzer() {
               </TooltipProvider>
 
               <Button
-  variant="outline"
-  className="flex items-center"
-  onClick={() => {
-    setFileFormat("json");
-    saveCapture();
-  }}
->
-  <Save className="mr-2 h-4 w-4" />
-  Save As
-</Button>
-
+                variant="outline"
+                className="flex items-center"
+                onClick={() => {
+                  setFileFormat("json")
+                  saveCapture()
+                }}
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save As
+              </Button>
             </div>
           </div>
 
@@ -1054,9 +1044,6 @@ export default function PacketAnalyzer() {
                 )}
               </tbody>
             </table>
-
-
-
           </div>
         </CardContent>
       </Card>
@@ -1155,286 +1142,288 @@ export default function PacketAnalyzer() {
 
       {/* Packet Details Modal */}
       <Dialog open={showPacketDetails} onOpenChange={setShowPacketDetails}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center">
-            <Badge className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}>
-              {selectedPacket?.protocol}
-            </Badge>
-            Packet #{selectedPacket?.id} Details
-          </DialogTitle>
-          <DialogDescription>
-            Detailed information and analysis of the selected network packet
-          </DialogDescription>
-        </DialogHeader>
+        <DialogContent className="max-w-5xl w-[90vw] max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Badge className={`mr-2 ${selectedPacket ? getRowColorClasses(selectedPacket.protocol) : ""}`}>
+                {selectedPacket?.protocol}
+              </Badge>
+              Packet #{selectedPacket?.id} Details
+            </DialogTitle>
+            <DialogDescription>Detailed information and analysis of the selected network packet</DialogDescription>
+          </DialogHeader>
 
-        <ScrollArea className="flex-1 mt-4 h-[60vh]">
-          {selectedPacket && (
-            <Tabs defaultValue="formatted" className="w-full" onValueChange={(value) => setActiveTab(value)}>
-              <TabsList className="mb-4 w-full justify-start">
-                <TabsTrigger value="formatted">Formatted View</TabsTrigger>
-                <TabsTrigger value="raw">Raw Data</TabsTrigger>
-                <TabsTrigger value="hex">Detailed View</TabsTrigger>
-              </TabsList>
+          <div className="flex-1 mt-4 overflow-hidden">
+            {selectedPacket && (
+              <Tabs defaultValue="formatted" className="w-full" onValueChange={(value) => setActiveTab(value)}>
+                <TabsList className="mb-4 w-full justify-start overflow-x-auto">
+                  <TabsTrigger value="formatted">Formatted View</TabsTrigger>
+                  <TabsTrigger value="raw">Raw Data</TabsTrigger>
+                  <TabsTrigger value="hex">Detailed View</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="formatted" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <TabsContent value="formatted" className="space-y-6 overflow-y-auto max-h-[50vh] pr-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Basic Information</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+                          <dt className="font-medium">Packet ID:</dt>
+                          <dd>{selectedPacket.id}</dd>
+                          <dt className="font-medium">Timestamp:</dt>
+                          <dd>{selectedPacket.time}</dd>
+                          <dt className="font-medium">Length:</dt>
+                          <dd>{selectedPacket.length} bytes</dd>
+                          <dt className="font-medium">Protocol:</dt>
+                          <dd>
+                            <Badge className={getRowColorClasses(selectedPacket.protocol)}>
+                              {selectedPacket.protocol}
+                            </Badge>
+                          </dd>
+                        </dl>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Packet Details</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+                          <dt className="font-medium">Info:</dt>
+                          <dd>{selectedPacket.info}</dd>
+                          <dt className="font-medium">Details:</dt>
+                          <dd>{selectedPacket.details}</dd>
+                        </dl>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Source</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+                          <dt className="font-medium">IP Address:</dt>
+                          <dd className="flex items-center">
+                            {selectedPacket.sourceIp}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.sourceIp)
+                                showNotification("IP copied to clipboard", "success")
+                              }}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </dd>
+                          <dt className="font-medium">MAC Address:</dt>
+                          <dd className="flex items-center">
+                            {selectedPacket.sourceMac}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.sourceMac)
+                                showNotification("MAC copied to clipboard", "success")
+                              }}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </dd>
+                          <dt className="font-medium">Port:</dt>
+                          <dd>{selectedPacket.sourcePort}</dd>
+                        </dl>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Destination</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+                          <dt className="font-medium">IP Address:</dt>
+                          <dd className="flex items-center">
+                            {selectedPacket.destIp}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.destIp)
+                                showNotification("IP copied to clipboard", "success")
+                              }}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </dd>
+                          <dt className="font-medium">MAC Address:</dt>
+                          <dd className="flex items-center">
+                            {selectedPacket.destMac}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 ml-1"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(selectedPacket.destMac)
+                                showNotification("MAC copied to clipboard", "success")
+                              }}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </dd>
+                          <dt className="font-medium">Port:</dt>
+                          <dd>{selectedPacket.destPort}</dd>
+                        </dl>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="raw" className="overflow-hidden">
                   <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Basic Information</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-                        <dt className="font-medium">Packet ID:</dt>
-                        <dd>{selectedPacket.id}</dd>
-                        <dt className="font-medium">Timestamp:</dt>
-                        <dd>{selectedPacket.time}</dd>
-                        <dt className="font-medium">Length:</dt>
-                        <dd>{selectedPacket.length} bytes</dd>
-                        <dt className="font-medium">Protocol:</dt>
-                        <dd>
-                          <Badge className={getRowColorClasses(selectedPacket.protocol)}>
-                            {selectedPacket.protocol}
-                          </Badge>
-                        </dd>
-                      </dl>
+                    <CardContent className="p-4">
+                      <div className="overflow-y-auto max-h-[50vh]">
+                        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs font-mono whitespace-pre">
+                          {JSON.stringify(selectedPacket, null, 2)}
+                        </pre>
+                      </div>
                     </CardContent>
                   </Card>
+                </TabsContent>
 
+                <TabsContent value="hex" className="overflow-hidden">
                   <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Packet Details</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-                        <dt className="font-medium">Info:</dt>
-                        <dd>{selectedPacket.info}</dd>
-                        <dt className="font-medium">Details:</dt>
-                        <dd>{selectedPacket.details}</dd>
-                      </dl>
+                    <CardContent className="p-4">
+                      <div className="overflow-y-auto max-h-[50vh]">
+                        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs font-mono whitespace-pre">
+                          {selectedPacket.detailedInfo || "Loading detailed packet information..."}
+                        </pre>
+                      </div>
                     </CardContent>
                   </Card>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Source</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-                        <dt className="font-medium">IP Address:</dt>
-                        <dd className="flex items-center">
-                          {selectedPacket.sourceIp}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 ml-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigator.clipboard.writeText(selectedPacket.sourceIp);
-                              showNotification("IP copied to clipboard", "success");
-                            }}
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </dd>
-                        <dt className="font-medium">MAC Address:</dt>
-                        <dd className="flex items-center">
-                          {selectedPacket.sourceMac}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 ml-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigator.clipboard.writeText(selectedPacket.sourceMac);
-                              showNotification("MAC copied to clipboard", "success");
-                            }}
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </dd>
-                        <dt className="font-medium">Port:</dt>
-                        <dd>{selectedPacket.sourcePort}</dd>
-                      </dl>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Destination</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-                        <dt className="font-medium">IP Address:</dt>
-                        <dd className="flex items-center">
-                          {selectedPacket.destIp}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 ml-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigator.clipboard.writeText(selectedPacket.destIp);
-                              showNotification("IP copied to clipboard", "success");
-                            }}
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </dd>
-                        <dt className="font-medium">MAC Address:</dt>
-                        <dd className="flex items-center">
-                          {selectedPacket.destMac}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 ml-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigator.clipboard.writeText(selectedPacket.destMac);
-                              showNotification("MAC copied to clipboard", "success");
-                            }}
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </dd>
-                        <dt className="font-medium">Port:</dt>
-                        <dd>{selectedPacket.destPort}</dd>
-                      </dl>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="raw">
-                <Card>
-                  <CardContent className="p-4">
-                    {/* Added max-h to force scrollbars when content exceeds the height */}
-                    <pre className="bg-muted p-4 rounded-md overflow-x-auto overflow-y-auto text-xs font-mono whitespace-pre max-h-[40vh]">
-                      {JSON.stringify(selectedPacket, null, 2)}
-                    </pre>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="hex">
-                <Card>
-                  <CardContent className="p-4">
-                    {/* Added max-h to force scrollbars when content exceeds the height */}
-                    <pre className="bg-muted p-4 rounded-md overflow-x-auto overflow-y-auto text-xs font-mono whitespace-pre max-h-[40vh]">
-                      {selectedPacket.detailedInfo || "Loading detailed packet information..."}
-                    </pre>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          )}
-        </ScrollArea>
-
-        <DialogFooter className="flex justify-between items-center mt-4">
-          <div className="flex items-center text-sm text-muted-foreground">
-            <span>Captured at {selectedPacket?.time}</span>
-          </div>
-          <div className="flex gap-2">
-            {activeTab !== "formatted" && (
-              <Button variant="outline" size="sm" onClick={copyCurrentData}>
-                <Copy className="mr-2 h-4 w-4" />
-                {copied ? "Copied" : "Copy Data"}
-              </Button>
+                </TabsContent>
+              </Tabs>
             )}
           </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
 
-    {/* Statistics Modal */}
-<Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
-  <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
-    <DialogHeader className="shrink-0">
-      <DialogTitle>Packet Analysis Statistics</DialogTitle>
-      <DialogDescription>Statistical breakdown of captured network traffic</DialogDescription>
-    </DialogHeader>
+          <DialogFooter className="flex justify-between items-center mt-4">
+            <div className="flex items-center text-sm text-muted-foreground">
+              <span>Captured at {selectedPacket?.time}</span>
+            </div>
+            <div className="flex gap-2">
+              {activeTab !== "formatted" && (
+                <Button variant="outline" size="sm" onClick={copyCurrentData}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  {copied ? "Copied" : "Copy Data"}
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-    {/* Scrollable content */}
-    <div className="flex-1 overflow-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Capture Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
-              <dt className="font-medium">Total Packets:</dt>
-              <dd>{packets.length}</dd>
-              <dt className="font-medium">Start Time:</dt>
-              <dd>{captureStats.startTime || "N/A"}</dd>
-              <dt className="font-medium">Duration:</dt>
-              <dd>{captureStats.elapsedTime > 0 ? `${captureStats.elapsedTime} seconds` : "N/A"}</dd>
-              <dt className="font-medium">Average Rate:</dt>
-              <dd>{captureStats.packetsPerSecond > 0 ? `${captureStats.packetsPerSecond} packets/sec` : "N/A"}</dd>
-              <dt className="font-medium">Unique Protocols:</dt>
-              <dd>{new Set(packets.map((p) => p.protocol)).size}</dd>
-            </dl>
-          </CardContent>
-        </Card>
+      {/* Statistics Modal */}
+      <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
+        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] flex flex-col">
+          <DialogHeader className="shrink-0">
+            <DialogTitle>Packet Analysis Statistics</DialogTitle>
+            <DialogDescription>Statistical breakdown of captured network traffic</DialogDescription>
+          </DialogHeader>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Protocol Distribution</CardTitle>
-          </CardHeader>
-          <CardContent className="h-[300px] relative">
-            <canvas ref={chartRef} className="w-full h-full"></canvas>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="flex-1 overflow-y-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Capture Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <dl className="grid grid-cols-[1fr_2fr] gap-2 text-sm">
+                    <dt className="font-medium">Total Packets:</dt>
+                    <dd>{packets.length}</dd>
+                    <dt className="font-medium">Start Time:</dt>
+                    <dd>{captureStats.startTime || "N/A"}</dd>
+                    <dt className="font-medium">Duration:</dt>
+                    <dd>{captureStats.elapsedTime > 0 ? `${captureStats.elapsedTime} seconds` : "N/A"}</dd>
+                    <dt className="font-medium">Average Rate:</dt>
+                    <dd>
+                      {captureStats.packetsPerSecond > 0 ? `${captureStats.packetsPerSecond} packets/sec` : "N/A"}
+                    </dd>
+                    <dt className="font-medium">Unique Protocols:</dt>
+                    <dd>{new Set(packets.map((p) => p.protocol)).size}</dd>
+                  </dl>
+                </CardContent>
+              </Card>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">Protocol Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th className="text-left p-2">Protocol</th>
-                <th className="text-left p-2">Count</th>
-                <th className="text-left p-2">Percentage</th>
-                <th className="text-left p-2">Avg. Size</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(
-                packets.reduce(
-                  (acc, packet) => {
-                    const protocol = packet.protocol;
-                    if (!acc[protocol]) {
-                      acc[protocol] = { count: 0, totalSize: 0 };
-                    }
-                    acc[protocol].count++;
-                    acc[protocol].totalSize += Number.parseInt(packet.length, 10);
-                    return acc;
-                  },
-                  {} as Record<string, { count: number; totalSize: number }>
-                )
-              ).map(([protocol, data]) => (
-                <tr key={protocol}>
-                  <td className="p-2">
-                    <Badge className={getRowColorClasses(protocol)}>{protocol}</Badge>
-                  </td>
-                  <td className="p-2">{data.count}</td>
-                  <td className="p-2">{((data.count / packets.length) * 100).toFixed(1)}%</td>
-                  <td className="p-2">{Math.round(data.totalSize / data.count)} bytes</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-    </div>
-  </DialogContent>
-</Dialog>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Protocol Distribution</CardTitle>
+                </CardHeader>
+                <CardContent className="h-[300px] relative">
+                  <canvas ref={chartRef} className="w-full h-full"></canvas>
+                </CardContent>
+              </Card>
+            </div>
 
+            <Card className="mb-6">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Protocol Breakdown</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr>
+                        <th className="text-left p-2">Protocol</th>
+                        <th className="text-left p-2">Count</th>
+                        <th className="text-left p-2">Percentage</th>
+                        <th className="text-left p-2">Avg. Size</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(
+                        packets.reduce(
+                          (acc, packet) => {
+                            const protocol = packet.protocol
+                            if (!acc[protocol]) {
+                              acc[protocol] = { count: 0, totalSize: 0 }
+                            }
+                            acc[protocol].count++
+                            acc[protocol].totalSize += Number.parseInt(packet.length, 10)
+                            return acc
+                          },
+                          {} as Record<string, { count: number; totalSize: number }>,
+                        ),
+                      ).map(([protocol, data]) => (
+                        <tr key={protocol}>
+                          <td className="p-2">
+                            <Badge className={getRowColorClasses(protocol)}>{protocol}</Badge>
+                          </td>
+                          <td className="p-2">{data.count}</td>
+                          <td className="p-2">{((data.count / packets.length) * 100).toFixed(1)}%</td>
+                          <td className="p-2">{Math.round(data.totalSize / data.count)} bytes</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Load Chart.js dynamically */}
       <script

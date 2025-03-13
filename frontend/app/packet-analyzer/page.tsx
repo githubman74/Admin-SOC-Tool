@@ -92,14 +92,6 @@ const protocolColors: Record<string, string> = {
   MQTT: "bg-[#FFD6CC] text-black dark:bg-orange-500 dark:text-white",
   SMB: "bg-[#CCF2FF] text-black dark:bg-sky-500 dark:text-white",
   NETBIOS: "bg-[#CCFFE0] text-black dark:bg-emerald-500 dark:text-white",
-  "SQL SERVER": "bg-[#FFCCD6] text-black dark:bg-pink-500 dark:text-white",
-  MYSQL: "bg-[#D6CCFF] text-black dark:bg-violet-600 dark:text-white",
-  POSTGRESQL: "bg-[#CCFFD6] text-black dark:bg-green-500 dark:text-white",
-  "ORACLE DB": "bg-[#FFE0CC] text-black dark:bg-orange-500 dark:text-white",
-  REDIS: "bg-[#FFCCE0] text-black dark:bg-pink-500 dark:text-white",
-  MONGODB: "bg-[#E0FFCC] text-black dark:bg-lime-500 dark:text-white",
-  ELASTICSEARCH: "bg-[#CCE0FF] text-black dark:bg-blue-500 dark:text-white",
-  MEMCACHED: "bg-[#FFCCD9] text-black dark:bg-pink-500 dark:text-white",
   NFS: "bg-[#D9FFCC] text-black dark:bg-lime-500 dark:text-white",
   KERBEROS: "bg-[#CCFFDB] text-black dark:bg-emerald-500 dark:text-white",
   SIPS: "bg-[#DBCCFF] text-black dark:bg-violet-500 dark:text-white",
@@ -117,7 +109,8 @@ const protocolColors: Record<string, string> = {
   "Unresolved Protocol": "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
   Unknown: "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
   Raw: "bg-[#EDEDED] text-black dark:bg-gray-600 dark:text-white",
-}
+};
+
 
 // Protocol color mapping for chart
 const protocolColorMapping: Record<string, string> = {
@@ -168,14 +161,6 @@ const protocolColorMapping: Record<string, string> = {
   MQTT: "#FFD6CC",
   SMB: "#CCF2FF",
   NETBIOS: "#CCFFE0",
-  "SQL SERVER": "#FFCCD6",
-  MYSQL: "#D6CCFF",
-  POSTGRESQL: "#CCFFD6",
-  "ORACLE DB": "#FFE0CC",
-  REDIS: "#FFCCE0",
-  MONGODB: "#E0FFCC",
-  ELASTICSEARCH: "#CCE0FF",
-  MEMCACHED: "#FFCCD9",
   NFS: "#D9FFCC",
   KERBEROS: "#CCFFDB",
   SIPS: "#DBCCFF",
@@ -193,7 +178,8 @@ const protocolColorMapping: Record<string, string> = {
   "Unresolved Protocol": "#EDEDED",
   Unknown: "#EDEDED",
   Raw: "#EDEDED",
-}
+};
+
 
 interface Packet {
   id: number

@@ -505,7 +505,7 @@ export default function SystemDashboard() {
                 <span className="text-3xl font-bold">{metrics.memory_usage.toFixed(1)}%</span>
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">
-                    {metrics.top_memory_processes.length} Active Processes
+                    {metrics.process_details.length} Active Processes
                   </p>
                 </div>
               </div>
@@ -672,7 +672,7 @@ export default function SystemDashboard() {
                       Active Processes
                     </p>
                     <p className="text-2xl font-bold">
-                      {metrics.top_cpu_processes.length}
+                      {metrics.process_details.length}
                     </p>
                   </div>
                   <div className="h-12 w-12 rounded-full border-4 border-primary flex items-center justify-center">

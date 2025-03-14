@@ -64,6 +64,15 @@ interface LineChartProps {
   yAxisFormatter: (value: number) => string;
 }
 
+// 🔹 Ensure data is correctly formatted before passing it to LineChart
+const transformData = (data: any[]): LineChartProps["data"] => {
+  return data.map((item) => ({
+    timestamp: Number(item.timestamp) || Date.now(), // Ensure timestamp exists
+    value: Number(item.value) || 0, // Ensure value exists
+    ...item, // Preserve additional properties
+  }));
+};
+
 // LineChart Component
 export const LineChart = ({
   data,
@@ -78,9 +87,11 @@ export const LineChart = ({
   xAxisFormatter,
   yAxisFormatter,
 }: LineChartProps) => {
+  const formattedData = transformData(data); // ✅ Ensure correct data format
+
   return (
     <ResponsiveContainer width="100%" height={400}>
-      <AreaChart data={data}>
+      <AreaChart data={formattedData}>
         <defs>
           {series.map((serie, index) => (
             <linearGradient
@@ -104,12 +115,7 @@ export const LineChart = ({
           <YAxis width={yAxisWidth} tickFormatter={yAxisFormatter} domain={[0, 99]} />
         )}
         {showLegend && <Legend />}
-        {showTooltip && (
-          <Tooltip
-            content={<CustomTooltip />}
-            position={{ x: 0, y: 0 }} // Adjust position dynamically
-          />
-        )}
+        {showTooltip && <Tooltip content={<CustomTooltip />} />} {/* ✅ Removed fixed position */}
         {series.map((serie, index) => (
           <Area
             key={index}

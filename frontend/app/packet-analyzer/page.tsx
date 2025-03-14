@@ -250,12 +250,6 @@ export default function PacketAnalyzer() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // Force dark mode on component mount
-  useEffect(() => {
-    document.documentElement.classList.add("dark")
-    localStorage.setItem("theme", "dark")
-  }, [])
-
   // Clean up event source and intervals on unmount
   useEffect(() => {
     return () => {

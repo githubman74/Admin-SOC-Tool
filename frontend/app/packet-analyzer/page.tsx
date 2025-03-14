@@ -1,5 +1,11 @@
 "use client"
 
+declare global {
+  interface Window {
+    Chart: any;
+  }
+}
+
 import { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

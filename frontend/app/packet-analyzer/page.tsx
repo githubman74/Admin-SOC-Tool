@@ -1,5 +1,11 @@
 "use client"
 
+declare global {
+  interface Window {
+    Chart: any;
+  }
+}
+
 import { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -244,12 +250,6 @@ export default function PacketAnalyzer() {
     showNotification("Data copied to clipboard", "success")
     setTimeout(() => setCopied(false), 2000)
   }
-
-  // Force dark mode on component mount
-  useEffect(() => {
-    document.documentElement.classList.add("dark")
-    localStorage.setItem("theme", "dark")
-  }, [])
 
   // Clean up event source and intervals on unmount
   useEffect(() => {

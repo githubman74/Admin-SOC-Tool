@@ -308,12 +308,13 @@ export default function PacketAnalyzer() {
     setNotification({ show: true, message, type })
     setTimeout(() => {
       setNotification({ show: false, message: "", type: "info" })
-    }, 3000)
+    }, 2000)
   }
 
   const startCapture = async () => {
     setError(null)
     setCapturing(true)
+    setPackets([]) // Reset packets when starting a new capture
 
     try {
       const limit = packetCount ? Number.parseInt(packetCount, 10) : null
@@ -329,14 +330,22 @@ export default function PacketAnalyzer() {
       statsIntervalRef.current = setInterval(() => {
         const now = new Date()
         const elapsedSeconds = Math.floor((now.getTime() - startTime.getTime()) / 1000)
-        const pps = elapsedSeconds > 0 ? Math.round((packets.length / elapsedSeconds) * 10) / 10 : 0
 
-        setCaptureStats((prev) => ({
-          ...prev,
-          elapsedTime: elapsedSeconds,
-          totalPackets: packets.length,
-          packetsPerSecond: pps,
-        }))
+        // Use a ref to directly access the current packets state
+        setPackets((currentPackets) => {
+          const packetCount = currentPackets.length
+          const pps = elapsedSeconds > 0 ? Math.round((packetCount / elapsedSeconds) * 10) / 10 : 0
+
+          // Update stats with the current packet count
+          setCaptureStats((prev) => ({
+            ...prev,
+            elapsedTime: elapsedSeconds,
+            totalPackets: packetCount,
+            packetsPerSecond: pps,
+          }))
+
+          return currentPackets
+        })
       }, 1000)
 
       // Start capture on the Flask backend
@@ -716,7 +725,7 @@ export default function PacketAnalyzer() {
       {/* Notification */}
       {notification.show && (
         <div
-          className={`fixed top-20 right-4 z-50 p-4 rounded-md shadow-lg transition-opacity ${
+          className={`fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg transition-all ${
             notification.type === "success"
               ? "bg-green-500 text-white"
               : notification.type === "error"
@@ -735,7 +744,14 @@ export default function PacketAnalyzer() {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <div className="h-1 bg-white/30 mt-2 w-full animate-[shrink_3s_linear]"></div>
+          <div className="h-1 bg-white/30 mt-2 w-full relative overflow-hidden">
+            <div
+              className="absolute inset-0 bg-white animate-[shrink_2s_linear]"
+              style={{
+                animation: "shrink 2s linear forwards",
+              }}
+            ></div>
+          </div>
         </div>
       )}
 
@@ -1438,6 +1454,12 @@ export default function PacketAnalyzer() {
           `,
         }}
       />
+      <style jsx global>{`
+        @keyframes shrink {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}</style>
     </div>
   )
 }

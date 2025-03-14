@@ -228,6 +228,7 @@ export default function PacketAnalyzer() {
   const statsIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const [activeTab, setActiveTab] = useState("formatted")
   const [copied, setCopied] = useState(false)
+  const protoSchemeRef = useRef<HTMLDivElement>(null)
 
   // Update copy function to set the button state to "Copied"
   const copyCurrentData = () => {
@@ -298,6 +299,23 @@ export default function PacketAnalyzer() {
 
     loadChartJs()
   }, [])
+
+  // Handle clicks outside the protocol scheme dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (protoSchemeRef.current && !protoSchemeRef.current.contains(event.target as Node)) {
+        setShowProtoScheme(false)
+      }
+    }
+
+    if (showProtoScheme) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [showProtoScheme])
 
   const getRowColorClasses = (protocol: string) => {
     const normalized = protocol.toUpperCase()
@@ -892,9 +910,8 @@ export default function PacketAnalyzer() {
             </div>
           </div>
 
-          {/* Protocol Scheme Dropdown */}
           {showProtoScheme && (
-            <div className="mt-4 p-4 border rounded-md bg-card">
+            <div ref={protoSchemeRef} className="mt-4 p-4 border rounded-md bg-card">
               <h3 className="text-sm font-medium mb-3">Protocol Color Scheme</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {Object.entries(protocolColors).map(([protocol, colorClass]) => (
@@ -1145,7 +1162,13 @@ export default function PacketAnalyzer() {
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={applyFilters} className="flex-1">
+              <Button
+                onClick={() => {
+                  applyFilters()
+                  setShowFilterSidebar(false)
+                }}
+                className="flex-1"
+              >
                 Apply Filters
               </Button>
               <Button variant="outline" onClick={resetFilters} className="flex-1">

@@ -739,13 +739,16 @@ export default function SystemDashboard() {
         <div className="rounded-md border">
           <div className="relative w-full overflow-auto max-h-[400px]">
             <table className="w-full caption-bottom text-sm">
-            <thead className="sticky top-0 z-10 bg-black [&_tr]:border-b">
+            <thead className="sticky top-0 z-10  bg-card [&_tr]:border-b">
       <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
         <th className="h-10 px-2 text-left align-middle font-medium">PID</th>
         <th className="h-10 px-2 text-left align-middle font-medium">Process Name</th>
         <th className="h-10 px-2 text-left align-middle font-medium">CPU (s)</th>
         <th className="h-10 px-2 text-left align-middle font-medium">Memory</th>
         <th className="h-10 px-2 text-left align-middle font-medium">Handles</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">NPM</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">PM</th>
+        <th className="h-10 px-2 text-left align-middle font-medium">WS</th>
         <th className="h-10 px-2 text-left align-middle font-medium">Status</th>
       </tr>
     </thead>
@@ -775,6 +778,9 @@ export default function SystemDashboard() {
                           {(proc.WS / 1024 / 1024).toFixed(1)} MB
                         </td>
                         <td className="p-2 align-middle">{proc.Handles}</td>
+                        <td className="p-2 align-middle font-medium">{proc.NPM}</td>
+                        <td className="p-2 align-middle font-medium">{proc.PM}</td>
+                        <td className="p-2 align-middle font-medium">{proc.WS}</td>
                         <td className="p-2 align-middle">
                           <Badge variant="outline" className="bg-green-500/10 text-green-500">
                             Running

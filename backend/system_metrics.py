@@ -78,7 +78,7 @@ def update_network_speed():
             network_data = get_network_speed()
         except Exception as e:
             logging.error(f"Error in network monitoring: {e}")
-        time.sleep(10)
+        time.sleep(1)
 
 threading.Thread(target=update_network_speed, daemon=True).start()
 

@@ -1,24 +1,24 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun, Home, Activity } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Moon, Sun, Activity, Shield, Cpu, Network } from "lucide-react"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
 export function Navigation() {
-  const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   // Ensure component is mounted before rendering theme-dependent UI
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
-  // Don't show navigation on homepage
-  if (pathname === "/") return null;
+  // Hide navigation on the homepage
+  if (pathname === "/") return null
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -26,7 +26,7 @@ export function Navigation() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Activity className="h-5 w-5" />
-            <span>Network Monitor</span>
+            <span>Network Security Suite</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link
@@ -35,7 +35,10 @@ export function Navigation() {
                 pathname === "/system-monitoring" ? "text-foreground" : "text-muted-foreground"
               }`}
             >
-              System Monitoring
+              <span className="flex items-center gap-1">
+                <Cpu className="h-4 w-4" />
+                System Monitoring
+              </span>
             </Link>
             <Link
               href="/packet-analyzer"
@@ -43,7 +46,21 @@ export function Navigation() {
                 pathname === "/packet-analyzer" ? "text-foreground" : "text-muted-foreground"
               }`}
             >
-              Packet Analyzer
+              <span className="flex items-center gap-1">
+                <Network className="h-4 w-4" />
+                Packet Analyzer
+              </span>
+            </Link>
+            <Link
+              href="/cyberscan"
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                pathname === "/cyberscan" ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              <span className="flex items-center gap-1">
+                <Shield className="h-4 w-4" />
+                CyberScan
+              </span>
             </Link>
           </nav>
         </div>
@@ -60,15 +77,8 @@ export function Navigation() {
             )}
             <span className="sr-only">Toggle theme</span>
           </Button>
-
-          <Link href="/" className="md:hidden">
-            <Button variant="ghost" size="icon">
-              <Home className="h-5 w-5" />
-              <span className="sr-only">Home</span>
-            </Button>
-          </Link>
         </div>
       </div>
     </header>
-  );
+  )
 }

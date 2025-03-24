@@ -1,6 +1,6 @@
 import os
 import psutil
-from speedtest import Speedtest
+#import speedtest  # Removed since we’re now using psutil for network speed
 import asyncio
 import time
 import threading
@@ -8,6 +8,7 @@ import json
 import logging
 import subprocess
 import platform
+import re  # Needed for regex in get_ping
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -55,30 +56,56 @@ def get_disk_usage():
             continue
     return round((used / total) * 100, 2) if total else 0
 
-def get_network_speed():
+def get_ping(host="google.com"):
+    """
+    Uses the Windows ping command to get latency.
+    """
     try:
-        st = Speedtest()
-        st.get_best_server()
-        download = round(st.download() / 1_000_000, 2)
-        upload = round(st.upload() / 1_000_000, 2)
-        ping = round(st.results.ping, 2)
-        return {"download_speed": download, "upload_speed": upload, "ping": ping}
+        output = subprocess.check_output(["ping", "-n", "1", host], encoding='utf-8')
+        # Extract the ping time from output (e.g., "time=12ms" or "time<1ms")
+        match = re.search(r"time[=<](\d+)\s*ms", output)
+        if match:
+            return int(match.group(1))
     except Exception as e:
-        logging.warning(f"Network error: {e}")
-        return {"download_speed": 0, "upload_speed": 0, "ping": None}
+        logging.warning(f"Ping error: {e}")
+    return None
+
+def get_network_speed(interval=1):
+    """
+    Measures network upload and download speeds by sampling the psutil counters
+    over the given interval (default is 1 second) and returns speeds in Mbps.
+    Also measures ping.
+    """
+    net_before = psutil.net_io_counters()
+    time.sleep(interval)  # Wait for the interval duration
+    net_after = psutil.net_io_counters()
+    
+    # Calculate differences in bytes
+    bytes_sent = net_after.bytes_sent - net_before.bytes_sent
+    bytes_recv = net_after.bytes_recv - net_before.bytes_recv
+    
+    # Convert to Mbps (bytes to bits, then to megabits)
+    upload_speed = round((bytes_sent * 8) / (1_000_000 * interval), 2)
+    download_speed = round((bytes_recv * 8) / (1_000_000 * interval), 2)
+    
+    # Get ping
+    ping = get_ping()
+    
+    return {"download_speed": download_speed, "upload_speed": upload_speed, "ping": ping}
 
 # ------------------ Background Updates for Fast Metrics ------------------
 
+# Global network data; will be updated roughly every second.
 network_data = {"download_speed": 0, "upload_speed": 0, "ping": None}
 
 def update_network_speed():
     global network_data
     while True:
         try:
-            network_data = get_network_speed()
+            # get_network_speed() already waits for the interval
+            network_data = get_network_speed()  
         except Exception as e:
             logging.error(f"Error in network monitoring: {e}")
-        time.sleep(1)
 
 threading.Thread(target=update_network_speed, daemon=True).start()
 

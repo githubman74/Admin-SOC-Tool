@@ -229,15 +229,15 @@ export default function CyberScanPage() {
     e.preventDefault()
     setError(null)
 
-    // Basic URL validation
-    if (!url.trim()) {
+    // Validate URL before scanning
+    const urlToScan = url.trim()
+    if (!urlToScan) {
       setError("Please enter a URL")
       return
     }
 
-    // Check if URL has a valid format
     try {
-      const urlObj = new URL(url)
+      const urlObj = new URL(urlToScan)
       if (!["http:", "https:"].includes(urlObj.protocol)) {
         setError("URL must start with http:// or https://")
         return
@@ -250,18 +250,12 @@ export default function CyberScanPage() {
     setIsScanning(true)
     setScanProgress(0)
 
-    // Simulate scanning progress
+    // Simulated scan progress
     const interval = setInterval(() => {
-      setScanProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        return prev + 4
-      })
+      setScanProgress(prev => Math.min(prev + 4, 100))
     }, 150)
 
-    // Simulate API call with mock data
+    // Simulated API call
     setTimeout(() => {
       clearInterval(interval)
       setScanProgress(100)
@@ -328,15 +322,14 @@ export default function CyberScanPage() {
     e.preventDefault()
     setError(null)
 
-    // Basic hash validation
-    if (!hash.trim()) {
+    const hashToCheck = hash.trim()
+    if (!hashToCheck) {
       setError("Please enter a SHA256 hash")
       return
     }
 
-    // Check if hash has a valid SHA256 format (64 hex characters)
     const sha256Regex = /^[a-fA-F0-9]{64}$/
-    if (!sha256Regex.test(hash)) {
+    if (!sha256Regex.test(hashToCheck)) {
       setError("Please enter a valid SHA256 hash (64 hexadecimal characters)")
       return
     }
@@ -344,18 +337,11 @@ export default function CyberScanPage() {
     setIsScanning(true)
     setScanProgress(0)
 
-    // Simulate scanning progress
+    // Simulated hash lookup
     const interval = setInterval(() => {
-      setScanProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        return prev + 10
-      })
+      setScanProgress(prev => Math.min(prev + 10, 100))
     }, 100)
 
-    // Simulate API call with mock data
     setTimeout(() => {
       clearInterval(interval)
       setScanProgress(100)
@@ -421,25 +407,18 @@ export default function CyberScanPage() {
   }
 
   const handleRescan = (historyItem: any) => {
-    if (historyItem.type === "file") {
-      // Can't actually rescan the file without the original file
-      // So we'll just simulate a new scan with the same hash
+    if (historyItem.type === "file" || historyItem.type === "hash") {
       setHash(historyItem.hash)
       setActiveTab("hash")
+      // Use setTimeout to ensure state updates before triggering lookup
       setTimeout(() => {
-        handleHashLookup(new Event("submit") as any)
+        handleHashLookup(new Event("submit") as unknown as React.FormEvent)
       }, 100)
     } else if (historyItem.type === "url") {
       setUrl(historyItem.name)
       setActiveTab("url")
       setTimeout(() => {
-        handleUrlScan(new Event("submit") as any)
-      }, 100)
-    } else {
-      setHash(historyItem.hash)
-      setActiveTab("hash")
-      setTimeout(() => {
-        handleHashLookup(new Event("submit") as any)
+        handleUrlScan(new Event("submit") as unknown as React.FormEvent)
       }, 100)
     }
   }
@@ -567,21 +546,20 @@ export default function CyberScanPage() {
                   <p className="text-sm text-muted-foreground mb-4 max-w-md">
                     Upload any file to scan for malware, viruses, and other threats. Maximum file size: 100MB.
                   </p>
-                  <label htmlFor="file-upload">
-                    <Button
-                      variant="outline"
-                      className="border-primary/50 text-primary hover:bg-primary/10 hover:text-primary"
-                    >
-                      Select File
-                    </Button>
-                    <input
-                      id="file-upload"
-                      type="file"
-                      className="hidden"
-                      onChange={handleFileSelect}
-                      ref={fileInputRef}
-                    />
-                  </label>
+                  <Button
+                    variant="outline"
+                    className="border-primary/50 text-primary hover:bg-primary/10 hover:text-primary"
+                    onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                  >
+                    Select File
+                  </Button>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                    ref={fileInputRef}
+                  />
                 </>
               )}
             </div>
@@ -663,13 +641,14 @@ export default function CyberScanPage() {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         className="flex-1"
+                        autoFocus
                       />
                       <Button
                         type="submit"
                         disabled={isScanning}
                         className="relative overflow-hidden group"
-                        onMouseEnter={() => setScanButtonHover(true)}
-                        onMouseLeave={() => setScanButtonHover(false)}
+                        // onMouseEnter={() => setScanButtonHover(true)}
+                        // onMouseLeave={() => setScanButtonHover(false)}
                       >
                         <span className="relative z-10 flex items-center gap-2">
                           <Zap className={`h-4 w-4 ${scanButtonHover ? "animate-pulse" : ""}`} />
@@ -735,12 +714,16 @@ export default function CyberScanPage() {
                       value={hash}
                       onChange={(e) => setHash(e.target.value)}
                       className="font-mono text-sm"
+                      autoFocus
                     />
 
                     <div className="flex items-center gap-2 text-muted-foreground text-xs p-2 bg-muted/50 rounded-md">
                       <Info className="h-4 w-4 shrink-0" />
-                      <span>Example: 8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4</span>
+                      <span className="break-all">
+                        Example: 8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4
+                      </span>
                     </div>
+
 
                     {error && (
                       <div className="flex items-center gap-2 text-destructive text-sm p-2 bg-destructive/10 rounded-md">
@@ -753,8 +736,8 @@ export default function CyberScanPage() {
                       type="submit"
                       className="w-full relative overflow-hidden group"
                       disabled={isScanning}
-                      onMouseEnter={() => setScanButtonHover(true)}
-                      onMouseLeave={() => setScanButtonHover(false)}
+                      // onMouseEnter={() => setScanButtonHover(true)}
+                      // onMouseLeave={() => setScanButtonHover(false)}
                     >
                       <span className="relative z-10 flex items-center gap-2 justify-center">
                         <Search className={`h-4 w-4 ${scanButtonHover ? "animate-pulse" : ""}`} />
@@ -1436,4 +1419,3 @@ export default function CyberScanPage() {
     </div>
   )
 }
-

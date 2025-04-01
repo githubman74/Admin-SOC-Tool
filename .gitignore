@@ -1,6 +1,11 @@
 /captures
+/venv
+/__pycache__
+/backend/captures/
+/backend/venv/
+/backend/__pycache__/
 /frontend/node_modules/
 /agent/agent_config.json
-/server/agents.json
 /agent/__pycache__/
+/server/agents.json
 /server/__pycache__/

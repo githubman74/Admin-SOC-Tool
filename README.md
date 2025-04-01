@@ -161,10 +161,3 @@ backend/
 └── README.md            # This file
 
 ```
-
-### CORS Configuration
-
-The backend uses FastAPI’s CORS middleware to allow requests from the frontend (typically at `http://localhost:3000`). Modify the `origins` list in `system_metrics.py` if your frontend is hosted at a different origin.
-
----
-

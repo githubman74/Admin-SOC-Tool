@@ -3,14 +3,24 @@ import { ScanResult } from "./types";
 
 const API_BASE_URL = "http://localhost:8000/api";
 
+// Helper function to calculate detection values based on VirusTotal results.
+const calculateDetectionValues = (vtEngines: any[]): { detectionRate: string, detectionPercentage: number } => {
+  if (!vtEngines || vtEngines.length === 0) {
+    return { detectionRate: "0/0", detectionPercentage: 0 };
+  }
+  const maliciousCount = vtEngines.filter(e => e.category === 'malicious' || e.category === 'suspicious').length;
+  return {
+    detectionRate: `${maliciousCount}/${vtEngines.length}`,
+    detectionPercentage: Math.round((maliciousCount / vtEngines.length) * 100)
+  };
+};
+
 // File scanning function
 export const scanFile = async (file: File, progressCallback: (progress: number) => void): Promise<ScanResult> => {
   try {
-    // Create a FormData object to send the file
     const formData = new FormData();
     formData.append("file", file);
     
-    // Start progress animation
     let progress = 0;
     const progressInterval = setInterval(() => {
       progress += 5;
@@ -21,13 +31,11 @@ export const scanFile = async (file: File, progressCallback: (progress: number) 
       progressCallback(progress);
     }, 200);
     
-    // Make the API request
     const response = await fetch(`${API_BASE_URL}/scan/file`, {
       method: "POST",
       body: formData,
     });
     
-    // Clear the progress interval
     clearInterval(progressInterval);
     
     if (!response.ok) {
@@ -35,29 +43,31 @@ export const scanFile = async (file: File, progressCallback: (progress: number) 
       throw new Error(errorData.detail || "Failed to scan file");
     }
     
-    // Parse the response
     const data = await response.json();
     
-    // Convert the backend response format to our frontend format
+    // Using camelCase keys as returned by the backend.
+    const { detectionRate, detectionPercentage } = calculateDetectionValues(data.virusTotalEngines);
+    
     const result: ScanResult = {
-      id: data.id,
-      fileName: data.file_name,
-      fileSize: data.file_size,
-      fileType: data.file_type,
+      id: data.id || Date.now().toString(),
+      fileName: data.fileName,
+      fileSize: data.fileSize,
+      fileType: data.fileType,
       hash: data.hash,
-      scanDate: data.scan_date,
-      detectionRate: data.detection_rate,
-      detectionPercentage: data.detection_percentage,
-      scanResults: data.scan_results.map((result: any) => ({
+      scanDate: data.scanDate,
+      detectionRate,
+      detectionPercentage,
+      // Map VirusTotal results to scanResults
+      scanResults: data.virusTotalEngines.map((result: any) => ({
         engine: result.engine,
         result: result.result,
-        category: result.category
+        category: result.category,
       })),
-      yaraMatches: data.yara_matches,
-      behaviorAnalysis: data.behavior_analysis
+      // Assume yaraMatches come from the local scan section if available
+      yaraMatches: data.localScan && data.localScan.yara ? data.localScan.yara : [],
+      behaviorAnalysis: data.behaviorAnalysis || {},
     };
     
-    // Set progress to 100% to indicate completion
     progressCallback(100);
     
     return result;
@@ -70,7 +80,6 @@ export const scanFile = async (file: File, progressCallback: (progress: number) 
 // URL scanning function
 export const scanUrl = async (url: string, progressCallback: (progress: number) => void): Promise<ScanResult> => {
   try {
-    // Start progress animation
     let progress = 0;
     const progressInterval = setInterval(() => {
       progress += 5;
@@ -81,7 +90,7 @@ export const scanUrl = async (url: string, progressCallback: (progress: number) 
       progressCallback(progress);
     }, 200);
     
-    // Make the API request
+    // For URL scans, we use a FormData as per the backend (if that is how it’s set up)
     const formData = new FormData();
     formData.append("url", url);
     
@@ -90,7 +99,6 @@ export const scanUrl = async (url: string, progressCallback: (progress: number) 
       body: formData,
     });
     
-    // Clear the progress interval
     clearInterval(progressInterval);
     
     if (!response.ok) {
@@ -98,26 +106,25 @@ export const scanUrl = async (url: string, progressCallback: (progress: number) 
       throw new Error(errorData.detail || "Failed to scan URL");
     }
     
-    // Parse the response
     const data = await response.json();
     
-    // Convert the backend response format to our frontend format
+    const { detectionRate, detectionPercentage } = calculateDetectionValues(data.virusTotalEngines);
+    
     const result: ScanResult = {
-      id: data.id,
+      id: data.id || Date.now().toString(),
       url: data.url,
       hash: data.hash,
-      scanDate: data.scan_date,
-      detectionRate: data.detection_rate,
-      detectionPercentage: data.detection_percentage,
-      scanResults: data.scan_results.map((result: any) => ({
+      scanDate: data.scanDate,
+      detectionRate,
+      detectionPercentage,
+      scanResults: data.virusTotalEngines.map((result: any) => ({
         engine: result.engine,
         result: result.result,
-        category: result.category
+        category: result.category,
       })),
-      urlAnalysis: data.url_analysis
+      urlAnalysis: data.urlAnalysis || {},
     };
     
-    // Set progress to 100% to indicate completion
     progressCallback(100);
     
     return result;
@@ -130,7 +137,6 @@ export const scanUrl = async (url: string, progressCallback: (progress: number) 
 // Hash lookup function
 export const lookupHash = async (hash: string, progressCallback: (progress: number) => void): Promise<ScanResult> => {
   try {
-    // Start progress animation
     let progress = 0;
     const progressInterval = setInterval(() => {
       progress += 10;
@@ -141,12 +147,15 @@ export const lookupHash = async (hash: string, progressCallback: (progress: numb
       progressCallback(progress);
     }, 100);
     
-    // Make the API request
-    const response = await fetch(`${API_BASE_URL}/lookup/hash/${hash}`, {
-      method: "GET",
+    // Change: Use POST with a JSON body to match the backend endpoint.
+    const response = await fetch(`${API_BASE_URL}/lookup/hash`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ hash }),
     });
     
-    // Clear the progress interval
     clearInterval(progressInterval);
     
     if (!response.ok) {
@@ -154,29 +163,28 @@ export const lookupHash = async (hash: string, progressCallback: (progress: numb
       throw new Error(errorData.detail || "Failed to lookup hash");
     }
     
-    // Parse the response
     const data = await response.json();
     
-    // Convert the backend response format to our frontend format
+    const { detectionRate, detectionPercentage } = calculateDetectionValues(data.virusTotalEngines);
+    
     const result: ScanResult = {
-      id: data.id,
-      fileName: data.file_name,
-      fileSize: data.file_size,
-      fileType: data.file_type,
+      id: data.id || Date.now().toString(),
+      fileName: data.fileName,
+      fileSize: data.fileSize,
+      fileType: data.fileType,
       hash: data.hash,
-      scanDate: data.scan_date,
-      detectionRate: data.detection_rate,
-      detectionPercentage: data.detection_percentage,
-      scanResults: data.scan_results.map((result: any) => ({
+      scanDate: data.scanDate,
+      detectionRate,
+      detectionPercentage,
+      scanResults: data.virusTotalEngines.map((result: any) => ({
         engine: result.engine,
         result: result.result,
-        category: result.category
+        category: result.category,
       })),
-      yaraMatches: data.yara_matches,
-      behaviorAnalysis: data.behavior_analysis
+      yaraMatches: data.localScan && data.localScan.yara ? data.localScan.yara : [],
+      behaviorAnalysis: data.behaviorAnalysis || {},
     };
     
-    // Set progress to 100% to indicate completion
     progressCallback(100);
     
     return result;

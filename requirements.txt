@@ -1,0 +1,7 @@
+psutil
+requests
+wmi
+speedtest-cli
+uvicorn
+fastapi
+httpx

@@ -1,4 +1,6 @@
 /captures
-\frontend\node_modules
-\agent\agent_config.json
-\server\agents.json
+/frontend/node_modules/
+/agent/agent_config.json
+/server/agents.json
+/agent/__pycache__/
+/server/__pycache__/

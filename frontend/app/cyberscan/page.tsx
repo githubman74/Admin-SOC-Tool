@@ -187,13 +187,13 @@ export default function CyberScanPage() {
           result: engine.result,
           category: engine.category.toLowerCase()
         })),
-        yaraMatches: data.localScan.yara && !data.localScan.yara.error ? 
-          data.localScan.yara.map((match: any) => ({
-            rule: match.rule,
-            description: match.meta?.description || "No description available",
-            severity: match.meta?.severity || "Medium",
-            tags: match.tags || []
-          })) : [],
+        yaraMatches: Array.isArray(data.localScan.yara) ? 
+  data.localScan.yara.map((match: any) => ({
+    rule: match.rule,
+    description: match.meta?.description || "No description available",
+    severity: match.meta?.severity || "Medium",
+    tags: match.tags || []
+  })) : [],
         behaviorAnalysis: {
           networkConnections: [],
           fileOperations: [],

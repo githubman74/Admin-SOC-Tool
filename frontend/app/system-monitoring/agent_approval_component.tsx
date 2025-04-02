@@ -1,44 +1,48 @@
-"use client";
+"use client"
 
-import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Loader, Check, X, RefreshCw } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { useEffect, useState, useCallback } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Loader, Check, X, RefreshCw } from "lucide-react"
+import { toast } from "react-hot-toast"
 
 interface Agent {
-  hostname: string;
-  ip: string;
+  hostname: string
+  ip: string
 }
 
-export default function AgentApproval() {
-  const [pendingAgents, setPendingAgents] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState(false);
+interface AgentApprovalProps {
+  onAgentApproved?: () => void // Add callback prop
+}
 
-  const SERVER_URL = "http://localhost:8123"; // Update when deployed
+export default function AgentApproval({ onAgentApproved }: AgentApprovalProps) {
+  const [pendingAgents, setPendingAgents] = useState<Agent[]>([])
+  const [loading, setLoading] = useState(false)
+
+  const SERVER_URL = "http://localhost:8123" // Update when deployed
 
   // Function to fetch pending agents
   const fetchPendingAgents = useCallback(async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const response = await fetch(`${SERVER_URL}/pending`);
+      const response = await fetch(`${SERVER_URL}/pending`)
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
         // Convert the returned object into an array
         const agents = Object.entries(data).map(([hostname, ip]) => ({
           hostname,
           ip: ip as string,
-        }));
-        setPendingAgents(agents);
+        }))
+        setPendingAgents(agents)
       } else {
-        throw new Error("Failed to fetch pending agents");
+        throw new Error("Failed to fetch pending agents")
       }
     } catch (error) {
-      console.error("Error fetching agents:", error);
-      toast.error("Failed to load pending agents.");
+      console.error("Error fetching agents:", error)
+      toast.error("Failed to load pending agents.")
     }
-    setLoading(false);
-  }, [SERVER_URL]);
+    setLoading(false)
+  }, [SERVER_URL])
 
   // Approve an agent
   const approveAgent = async (hostname: string) => {
@@ -47,26 +51,29 @@ export default function AgentApproval() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hostname }),
-      });
+      })
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
         if (data.status === "approved" || data.status === "already_approved") {
-          toast.success(`Approved: ${hostname}`);
-          setPendingAgents((prev) =>
-            prev.filter((agent) => agent.hostname !== hostname)
-          );
+          toast.success(`Approved: ${hostname}`)
+          setPendingAgents((prev) => prev.filter((agent) => agent.hostname !== hostname))
+
+          // Call the callback to notify parent component
+          if (onAgentApproved) {
+            onAgentApproved()
+          }
         } else {
-          toast.error(`Approval failed for ${hostname}`);
+          toast.error(`Approval failed for ${hostname}`)
         }
       } else {
-        const err = await response.json();
-        toast.error(`Error: ${err.detail}`);
+        const err = await response.json()
+        toast.error(`Error: ${err.detail}`)
       }
     } catch (error) {
-      console.error("Error approving agent:", error);
-      toast.error("Approval failed.");
+      console.error("Error approving agent:", error)
+      toast.error("Approval failed.")
     }
-  };
+  }
 
   // Reject an agent
   const rejectAgent = async (hostname: string) => {
@@ -75,35 +82,33 @@ export default function AgentApproval() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hostname }),
-      });
+      })
       if (response.ok) {
-        toast.success(`Rejected: ${hostname}`);
-        setPendingAgents((prev) =>
-          prev.filter((agent) => agent.hostname !== hostname)
-        );
+        toast.success(`Rejected: ${hostname}`)
+        setPendingAgents((prev) => prev.filter((agent) => agent.hostname !== hostname))
       } else {
-        const err = await response.json();
-        toast.error(`Error: ${err.detail}`);
+        const err = await response.json()
+        toast.error(`Error: ${err.detail}`)
       }
     } catch (error) {
-      console.error("Error rejecting agent:", error);
-      toast.error("Rejection failed.");
+      console.error("Error rejecting agent:", error)
+      toast.error("Rejection failed.")
     }
-  };
+  }
 
   // Poll for pending agents every 10 seconds
   useEffect(() => {
-    fetchPendingAgents();
-    const interval = setInterval(fetchPendingAgents, 10000);
-    return () => clearInterval(interval);
-  }, [fetchPendingAgents]);
+    fetchPendingAgents()
+    const interval = setInterval(fetchPendingAgents, 10000)
+    return () => clearInterval(interval)
+  }, [fetchPendingAgents])
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6">
       <Card>
-        <CardHeader className="flex justify-between items-center">
+        <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <CardTitle>Pending Agent Approvals</CardTitle>
-          <Button variant="outline" size="sm" onClick={fetchPendingAgents}>
+          <Button variant="outline" size="sm" onClick={fetchPendingAgents} className="w-full sm:w-auto">
             <RefreshCw className="h-4 w-4 mr-1" /> Refresh
           </Button>
         </CardHeader>
@@ -117,16 +122,17 @@ export default function AgentApproval() {
               {pendingAgents.map((agent) => (
                 <li
                   key={agent.hostname}
-                  className="flex justify-between items-center p-4 border rounded-md"
+                  className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border rounded-md gap-3"
                 >
                   <div>
                     <p className="font-semibold">{agent.hostname}</p>
                     <p className="text-sm text-gray-500">{agent.ip}</p>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-2 w-full sm:w-auto">
                     <Button
                       variant="secondary"
                       size="sm"
+                      className="flex-1 sm:flex-none"
                       onClick={() => approveAgent(agent.hostname)}
                     >
                       <Check className="h-4 w-4 mr-1" /> Approve
@@ -134,6 +140,7 @@ export default function AgentApproval() {
                     <Button
                       variant="destructive"
                       size="sm"
+                      className="flex-1 sm:flex-none"
                       onClick={() => rejectAgent(agent.hostname)}
                     >
                       <X className="h-4 w-4 mr-1" /> Reject
@@ -148,5 +155,6 @@ export default function AgentApproval() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
+

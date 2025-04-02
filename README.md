@@ -161,3 +161,31 @@ backend/
 └── README.md            # This file
 
 ```
+
+---
+---
+
+#### Frontend setup
+- `cd frontend`
+- `npm install`
+- `npm run dev`
+
+if you plan to use venv (your call)
+- `python -m venv venv` (in the main folder)
+- `./venv/scripts/activate`(for Windows)
+- `source venv/bin/activate`(for Linux)
+- `pip install -r requirements.txt`
+		or
+- `pip install -r requirements.txt` (global installation)(better)
+#### Server setup
+- make sure you activate venv if you use one
+- `cd server`
+- `uvicorn server:app --host 0.0.0.0 --port 8123 --reload`
+
+#### Agent setup
+- make sure you activate venv if you use one
+- `cd agent`
+- `python agent.py`
+To make an executable:
+- `pip install pyinstaller`
+- `pyinstaller --onefile --add-data "agent_config.json;." agent.py`

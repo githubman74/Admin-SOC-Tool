@@ -12,7 +12,7 @@ import os
 app = FastAPI()
 
 # Enable CORS for frontend access
-origins = ["http://localhost:3000"]
+origins = ["http://localhost:3000","https://admin-soc-tool.vercel.app"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

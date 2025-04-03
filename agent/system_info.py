@@ -100,14 +100,15 @@ def get_top_cpu_processes():
         processes = []
         for proc in psutil.process_iter(['pid', 'name', 'cpu_percent']):
             try:
+                cpu_usage = proc.info['cpu_percent'] if proc.info['cpu_percent'] is not None else 0.0
                 processes.append({
                     "pid": proc.info['pid'],
                     "name": proc.info['name'],
-                    "cpu_percent": proc.info['cpu_percent']
+                    "cpu_percent": cpu_usage
                 })
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
-        return sorted(processes, key=lambda x: x["cpu_percent"], reverse=True)[:5]
+        return sorted(processes, key=lambda x: x["cpu_percent"] or 0.0, reverse=True)[:5]
     except Exception as e:
         logging.error(f"Error getting top CPU processes: {e}")
         return []
@@ -117,14 +118,15 @@ def get_top_memory_processes():
         processes = []
         for proc in psutil.process_iter(['pid', 'name', 'memory_percent']):
             try:
+                memory_usage = round(proc.info['memory_percent'], 2) if proc.info['memory_percent'] is not None else 0.0
                 processes.append({
                     "pid": proc.info['pid'],
                     "name": proc.info['name'],
-                    "memory_percent": round(proc.info['memory_percent'], 2)
+                    "memory_percent": memory_usage
                 })
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
-        return sorted(processes, key=lambda x: x["memory_percent"], reverse=True)[:5]
+        return sorted(processes, key=lambda x: x["memory_percent"] or 0.0, reverse=True)[:5]
     except Exception as e:
         logging.error(f"Error getting top memory processes: {e}")
         return []
@@ -197,6 +199,24 @@ def get_wifi_details():
                     signal_strength = parts[2].strip() if len(parts) > 2 else None
                     break
             return {"SSID": ssid, "Signal Strength": signal_strength}
+        except Exception as e:
+            logging.warning("WiFi details error: " + str(e))
+            return {"SSID": None, "Signal Strength": None}
+    elif system == "Darwin":  # macOS
+        try:
+            result = subprocess.check_output(["/usr/sbin/system_profiler", "SPWiFiDataType"], text=True)
+            ssid = None
+            signal = None
+            for line in result.splitlines():
+                if "SSID" in line:
+                    parts = line.split(":")
+                    if len(parts) == 2:
+                        ssid = parts[1].strip()
+                if "Signal" in line:
+                    parts = line.split(":")
+                    if len(parts) == 2:
+                        signal = parts[1].strip()
+            return {"SSID": ssid, "Signal Strength": signal}
         except Exception as e:
             logging.warning("WiFi details error: " + str(e))
             return {"SSID": None, "Signal Strength": None}
@@ -276,6 +296,40 @@ def get_process_details():
         except Exception as e:
             logging.error(f"Error getting process details (Linux): {e}")
             return []
+    
+    elif system == "Darwin":  # macOS
+        try:
+            result = subprocess.run(["ps", "axo", "pid,%cpu,comm"], capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                lines = result.stdout.strip().split("\n")
+                process_list = []
+                for line in lines[1:]:
+                    columns = line.split(maxsplit=2)
+                    if len(columns) == 3:
+                        try:
+                            process_list.append({
+                                "Id": int(columns[0]),
+                                "SI": 0,
+                                "ProcessName": columns[2],
+                                "CPU": float(columns[1]),
+                                "Handles": 0,
+                                "NPM": 0,
+                                "PM": 0,
+                                "WS": 0
+                            })
+                        except ValueError:
+                            logging.warning(f"Skipping malformed line: {line}")
+                return process_list
+            else:
+                logging.error(f"Error executing ps command: {result.stderr}")
+                return []
+        except subprocess.TimeoutExpired:
+            logging.error("ps command timed out.")
+            return []
+        except Exception as e:
+            logging.error(f"Error getting process details (macOS): {e}")
+            return []
+
     else:
         logging.error("Unsupported OS for process details.")
         return []
@@ -301,6 +355,7 @@ def get_system_info():
     try:
         info = {
             "hostname": socket.gethostname(),
+            "ip_address": socket.gethostbyname(socket.gethostname()),  # Improved IP retrieval
             "os": f"{platform.system()} {platform.release()}",
             "cpu_usage": get_cpu_usage(),
             "per_core_usage": get_cpu_core_usage(),

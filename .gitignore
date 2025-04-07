@@ -13,3 +13,6 @@
 /agent/.env
 /server/agents.json
 /server/__pycache__/
+/build
+/dist
+/main.spec

@@ -7,7 +7,6 @@ import time
 import json
 import logging
 import socket
-from speedtest import Speedtest
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Configure logging
@@ -68,29 +67,43 @@ def get_disk_usage():
         logging.error(f"Error getting disk usage: {e}")
         return 0
 
-def get_network_speed():
-    try:
-        st = Speedtest()
-        st.get_best_server()
-        download = round(st.download() / 1_000_000, 2)
-        upload = round(st.upload() / 1_000_000, 2)
-        ping = round(st.results.ping, 2)
-        return {"download_speed": download, "upload_speed": upload, "ping": ping}
-    except Exception as e:
-        logging.warning(f"Network error: {e}")
-        return {"download_speed": 0, "upload_speed": 0, "ping": None}
+
+def get_network_speed(interval=1):
+    """
+    Measures network upload and download speeds by sampling the psutil counters
+    over the given interval (default is 1 second) and returns speeds in Mbps.
+    Also measures ping.
+    """
+    net_before = psutil.net_io_counters()
+    time.sleep(interval)  # Wait for the interval duration
+    net_after = psutil.net_io_counters()
+    
+    # Calculate differences in bytes
+    bytes_sent = net_after.bytes_sent - net_before.bytes_sent
+    bytes_recv = net_after.bytes_recv - net_before.bytes_recv
+    
+    # Convert to Mbps (bytes to bits, then to megabits)
+    upload_speed = round((bytes_sent * 8) / (1_000_000 * interval), 2)
+    download_speed = round((bytes_recv * 8) / (1_000_000 * interval), 2)
+    
+    # Get ping
+    ping = 0
+    
+    return {"download_speed": download_speed, "upload_speed": upload_speed, "ping": ping}
 
 # ------------------ Background Updates for Fast Metrics ------------------
+
+# Global network data; will be updated roughly every second.
 network_data = {"download_speed": 0, "upload_speed": 0, "ping": None}
 
 def update_network_speed():
     global network_data
     while True:
         try:
-            network_data = get_network_speed()
+            # get_network_speed() already waits for the interval
+            network_data = get_network_speed()  
         except Exception as e:
             logging.error(f"Error in network monitoring: {e}")
-        time.sleep(10)
 
 threading.Thread(target=update_network_speed, daemon=True).start()
 

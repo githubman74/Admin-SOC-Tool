@@ -6,13 +6,13 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-import socket
 import os
+import sys
 
 app = FastAPI()
 
 # Enable CORS for frontend access
-origins = ["http://localhost:3000","https://admin-soc-tool.vercel.app"]
+origins = ["http://localhost:3000", "https://admin-soc-tool.vercel.app"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -21,7 +21,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-PERSISTENCE_FILE = "agents.json"
+# Set up the base path: use the executable directory if bundled, else the script directory.
+if getattr(sys, 'frozen', False):
+    base_path = os.path.dirname(sys.executable)
+else:
+    base_path = os.path.dirname(os.path.abspath(__file__))
+
+# Use an absolute path for the persistence file
+PERSISTENCE_FILE = os.path.join(base_path, "agents.json")
 
 # In-memory storage for pending and approved agents and tokens
 pending_agents = {}      # {hostname: ip_address}
@@ -29,8 +36,6 @@ approved_agents = {}     # {hostname: ip_address}
 agent_tokens = {}        # {hostname: token}
 
 # Global variable to store the latest metrics received from agents
-latest_metrics = {}
-
 all_metrics = {}
 
 # ================== PERSISTENCE FUNCTIONS ==================
@@ -55,15 +60,17 @@ def load_persistence():
             approved_agents = {}
             agent_tokens = {}
 
-
 def save_persistence():
     data = {
         "approved_agents": approved_agents,
         "agent_tokens": agent_tokens
     }
-    with open(PERSISTENCE_FILE, "w") as f:
-        json.dump(data, f)
-    print("[PERSISTENCE] Saved approved agents and tokens.")
+    try:
+        with open(PERSISTENCE_FILE, "w") as f:
+            json.dump(data, f)
+        print("[PERSISTENCE] Saved approved agents and tokens.")
+    except Exception as e:
+        print(f"[PERSISTENCE] Error saving data: {e}")
 
 load_persistence()
 
@@ -127,40 +134,47 @@ def reject_agent(request: RejectRequest):
     return {"status": "rejected", "message": "Device has been denied access."}
 
 # ================== METRICS ENDPOINT ==================
-
 @app.post("/metrics")
-def receive_metrics(request: Request, data: dict):
-    """Receives system data from approved agents with token authentication."""
-    hostname = data.get("hostname")
-    token = request.headers.get("Authorization", "").replace("Bearer ", "")
-    
-    # Debug logging
-    print(f"[DEBUG] /metrics called with hostname: {hostname}")
-    print(f"[DEBUG] Approved agents: {approved_agents}")
-    print(f"[DEBUG] Received token: {token}")
-    
-    if not hostname or hostname not in approved_agents:
-        raise HTTPException(status_code=403, detail="Unauthorized agent.")
-    
-    expected_token = agent_tokens.get(hostname)
-    if not expected_token or token != expected_token:
-        raise HTTPException(status_code=403, detail="Invalid token.")
-    
-    # Update the metrics for the specific agent
-    global all_metrics
-    all_metrics[hostname] = data
-    
-    print(f"[DATA] Received system info from {hostname}: {data}")
-    return {"status": "success", "message": "Data received"}
+async def receive_metrics(request: Request):
+    try:
+        data = await request.json()
+    except Exception as e:
+        print(f"[ERROR] Failed to parse JSON: {e}")
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    try:
+        hostname = data.get("hostname")
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        
+        # Debug logging
+        print(f"[DEBUG] /metrics called with hostname: {hostname}")
+        print(f"[DEBUG] Approved agents: {approved_agents}")
+        print(f"[DEBUG] Received token: {token}")
+        
+        if not hostname or hostname not in approved_agents:
+            raise HTTPException(status_code=403, detail="Unauthorized agent.")
+        
+        expected_token = agent_tokens.get(hostname)
+        if not expected_token or token != expected_token:
+            raise HTTPException(status_code=403, detail="Invalid token.")
+        
+        # Update the metrics for the specific agent
+        # (Ensure that the data from get_system_info() is JSON serializable)
+        all_metrics[hostname] = data
+        
+        print(f"[DATA] Received system info from {hostname}: {data}")
+        return {"status": "success", "message": "Data received"}
+    except HTTPException as he:
+        # Re-raise known HTTP exceptions without modification
+        raise he
+    except Exception as e:
+        print(f"[ERROR] Exception in /metrics: {e}")
+        raise HTTPException(status_code=500, detail="Server Error")
+
 
 async def stream_metrics():
     """
     Streams the latest metrics from all approved agents as Server-Sent Events.
-    The JSON output will be of the form:
-      {
-         "Agent-1": { ... metrics ... },
-         "Agent-2": { ... metrics ... }
-      }
     """
     while True:
         yield f"data: {json.dumps(all_metrics)}\n\n"
@@ -175,3 +189,7 @@ def get_approved_agents():
 def metrics_stream():
     """Endpoint for the frontend to subscribe to real-time metrics updates."""
     return StreamingResponse(stream_metrics(), media_type="text/event-stream")
+
+if __name__ == "__main__":
+    # Run without reload for production or bundled exe
+    uvicorn.run("server:app", host="0.0.0.0", port=8123)

@@ -1,7 +1,8 @@
-psutil
-requests
-wmi
-speedtest-cli
-uvicorn
 fastapi
-httpx
+uvicorn
+pydantic
+flask
+flask-cors
+scapy
+fpdf
+psutil

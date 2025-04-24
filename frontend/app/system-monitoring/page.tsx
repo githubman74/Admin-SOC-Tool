@@ -67,6 +67,8 @@ interface MetricsResponse {
   top_memory_processes: MemoryProcess[]
   top_network_processes: { name: string; connections: number }[]
   process_details: ProcessDetails[] | string
+  packets?: AgentPacket[]
+
 }
 
 interface Agent {
@@ -217,32 +219,34 @@ export default function SystemDashboard() {
 
     eventSource.onmessage = (event) => {
       try {
-        const rawData = JSON.parse(event.data)
-        console.log("Received Metrics:", rawData)
-
-        const transformedData: Record<string, MetricsResponse> = {}
-        Object.entries(rawData).forEach(([hostname, agentData]) => {
-          if (agentData && (agentData as any).data) {
-            transformedData[hostname] = (agentData as any).data
-          } else {
-            transformedData[hostname] = agentData as MetricsResponse
+        const rawData = JSON.parse(event.data);
+    
+        const transformedData: Record<string, MetricsResponse> = {};
+    
+        Object.entries(rawData).forEach(([hostname, agentObj]) => {
+          // ----- 1) system metrics -----
+          const metrics = (agentObj as any).data as MetricsResponse;
+          transformedData[hostname] = metrics;
+    
+          // ----- 2) packets -------------
+          const packets = (agentObj as any).packets;
+          if (hostname === selectedAgent?.hostname && Array.isArray(packets)) {
+            setAgentPackets(packets);
           }
-        })
-
-        setAllMetrics((prevMetrics) => {
-          const updated = { ...prevMetrics, ...transformedData }
-          return updated
-        })
-
-        setLastUpdated(new Date().toLocaleTimeString())
-        setConnectionStatus("connected")
-      } catch (err) {
-        console.error("Error parsing metrics:", err)
-        setConnectionStatus("disconnected")
-        setError("Connection to server lost")
+        });
+    
+        setAllMetrics(prev => ({ ...prev, ...transformedData }));
+        setLastUpdated(new Date().toLocaleTimeString());
+        setConnectionStatus("connected");
+      } catch (e) {
+        console.error("Error parsing metrics:", e);
+        setConnectionStatus("disconnected");
+        setError("Connection to server lost");
       }
-    }
-
+    };
+    
+    
+    
     eventSource.onerror = (err) => {
       console.error("EventSource failed:", err)
       setConnectionStatus("disconnected")
@@ -253,37 +257,6 @@ export default function SystemDashboard() {
   }, [fetchApprovedAgents])
 
   // Demo of agentPackets
-  useEffect(() => {
-    const demoPackets: AgentPacket[] = [
-      {
-        id: 1,
-        time: "2025-04-09 12:00:05",
-        length: "128",
-        sourceIp: "192.168.0.10",
-        sourceMac: "AA:BB:CC:DD:EE:FF",
-        sourcePort: "443",
-        destIp: "172.217.3.110",
-        destMac: "FF:EE:DD:CC:BB:AA",
-        destPort: "8443",
-        protocol: "HTTPS",
-        info: "Example agent-captured packet",
-      },
-      {
-        id: 2,
-        time: "2025-04-09 12:00:07",
-        length: "64",
-        sourceIp: "192.168.0.11",
-        sourceMac: "00:11:22:33:44:55",
-        sourcePort: "21",
-        destIp: "10.0.0.5",
-        destMac: "55:44:33:22:11:00",
-        destPort: "21",
-        protocol: "FTP",
-        info: "Another agent-captured packet",
-      },
-    ]
-    setTimeout(() => setAgentPackets(demoPackets), 1500)
-  }, [])
 
   const handleAgentApproved = useCallback(() => {
     fetchApprovedAgents()

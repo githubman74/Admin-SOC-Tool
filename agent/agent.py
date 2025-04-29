@@ -44,8 +44,7 @@ def main():
     agent_thread = None
 
     # Hardcoded server address
-    SERVER_IP = "https://admin-server-33le.onrender.com" 
-    SERVER_URL = f"http://{SERVER_IP}:8123"
+    SERVER_URL = "https://admin-server-33le.onrender.com"
 
     def save_config(data):
         try:

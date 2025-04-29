@@ -19,7 +19,7 @@ export default function AgentApproval({ onAgentApproved }: AgentApprovalProps) {
   const [pendingAgents, setPendingAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(false)
 
-  const SERVER_URL = "http://localhost:8123" // Update when deployed
+  const SERVER_URL = "https://admin-server-33le.onrender.com" // Update when deployed
 
   // Function to fetch pending agents
   const fetchPendingAgents = useCallback(async () => {

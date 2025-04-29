@@ -5,6 +5,7 @@
 /backend/venv/
 /backend/__pycache__/
 /frontend/node_modules/
+/agent/logs/
 /agent/agent_config.json
 /agent/__pycache__/
 /agent/dist/

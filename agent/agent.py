@@ -1,26 +1,41 @@
+import logging
+from datetime import datetime
 import ctypes
 import sys
 import os
 
-# hide console window
+# === Setup logging ===
+log_dir = os.path.join(os.getcwd(), "logs")
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, f"agent_log_{datetime.now().strftime('%Y-%m-%d')}.txt")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - [%(levelname)s] - %(message)s",
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler()
+    ]
+)
+
+# Hide console (optional, Windows only)
 # hwnd = ctypes.windll.kernel32.GetConsoleWindow()
 # if hwnd:
 #     ctypes.windll.user32.ShowWindow(hwnd, 0)
 
-# ensure stdout/stderr have a fileno()
+# Fix for environments with missing stdout/stderr
 for name in ('stdout', 'stderr'):
     stream = getattr(sys, name)
     if stream is None or not hasattr(stream, 'fileno'):
         setattr(sys, name, open(os.devnull, 'w'))
 
 try:
-    import __builtin__  # python2 shim
+    import __builtin__  # Python 2 compatibility
 except ImportError:
     import builtins as __builtin__
 
 from system_info import get_system_info
 from packet_capture import start_sniff, get_captured_packets
-
 
 def main():
     import tkinter as tk
@@ -40,8 +55,8 @@ def main():
         try:
             with open(CONFIG_FILE, 'w') as f:
                 json.dump(data, f, indent=4)
-        except Exception:
-            pass
+        except Exception as e:
+            logging.error(f"Failed to save config: {e}")
 
     def load_config():
         if not os.path.exists(CONFIG_FILE):
@@ -50,7 +65,8 @@ def main():
             with open(CONFIG_FILE, 'r') as f:
                 s = f.read().strip()
                 return json.loads(s) if s else {}
-        except:
+        except Exception as e:
+            logging.error(f"Failed to load config: {e}")
             save_config({})
             return {}
 
@@ -61,6 +77,7 @@ def main():
 
     def handle_exit(signum, frame):
         nonlocal running
+        logging.info("Agent exiting gracefully due to signal.")
         running = False
         os._exit(0)
 
@@ -71,7 +88,8 @@ def main():
         hn = socket.gethostname()
         try:
             ip = socket.gethostbyname(hn)
-        except:
+        except Exception as e:
+            logging.warning(f"Could not resolve hostname: {e}")
             ip = 'Unknown'
         return {'hostname': hn, 'ip_address': ip}
 
@@ -79,15 +97,22 @@ def main():
         info = get_device_info()
         cfg = load_config()
         if 'token' in cfg:
+            logging.info("Token already present, skipping approval request.")
             return cfg['token']
         try:
             r = httpx.post(f"{get_server_url()}/register", json=info, timeout=5)
-            if r.status_code == 200 and r.json().get('status') == 'approved':
-                token = r.json().get('token')
-                cfg['token'] = token
-                save_config(cfg)
-                return token
-        except:
+            if r.status_code == 200:
+                status = r.json().get('status')
+                if status == 'approved':
+                    token = r.json().get('token')
+                    cfg['token'] = token
+                    save_config(cfg)
+                    logging.info(f"Agent approved with token: {token}")
+                    return token
+                else:
+                    logging.info(f"Agent pending approval: {r.json().get('message')}")
+        except Exception as e:
+            logging.error(f"Approval request failed: {e}")
             time.sleep(3)
         return None
 
@@ -103,25 +128,24 @@ def main():
             'data': get_system_info(),
             'packets': get_captured_packets()[:50],
         }
-        print(f"[DEBUG] Sending {len(payload['packets'])} packets to server")
+        logging.info(f"Sending {len(payload['packets'])} packets to server")
 
         headers = {'Authorization': f'Bearer {token}'}
         try:
             httpx.post(f"{get_server_url()}/metrics", json=payload, headers=headers, timeout=5)
-        except:
+        except Exception as e:
+            logging.error(f"Failed to send metrics: {e}")
             time.sleep(3)
 
     def agent_loop():
         nonlocal running
         try:
-            start_sniff()  # Start capturing packets
-            print("Packet capture started successfully")  # Optional debug message
+            start_sniff()
+            logging.info("Packet capture started successfully.")
         except PermissionError:
-            print("Error: Insufficient permissions for packet capture. Please run as administrator/root.")
-            # Continue running without packet capture
+            logging.error("Insufficient permissions for packet capture. Please run as admin/root.")
         except Exception as e:
-            print(f"Error starting packet capture: {e}")
-            # Continue running without packet capture
+            logging.error(f"Error starting packet capture: {e}")
         
         while running:
             send_system_info()
@@ -132,6 +156,7 @@ def main():
         if running:
             messagebox.showinfo('Info', 'Agent already running')
             return
+        logging.info("Agent starting...")
         running = True
         agent_thread = threading.Thread(target=agent_loop, daemon=True)
         agent_thread.start()
@@ -142,10 +167,11 @@ def main():
         if not running:
             messagebox.showinfo('Info', 'Agent not running')
             return
+        logging.info("Agent stopping manually via UI.")
         running = False
         os._exit(0)
 
-    # GUI setup
+    # === GUI setup ===
     root = tk.Tk()
     root.title('Agent Configuration')
     frame = tk.Frame(root, padx=10, pady=10)
@@ -170,6 +196,7 @@ def main():
         c = load_config()
         c['server_ip'] = ip
         save_config(c)
+        logging.info(f"Server IP saved: {ip}")
         messagebox.showinfo('Info', f'Saved: {ip}')
 
     entry.bind('<FocusIn>', lambda e: entry.delete(0, 'end') or entry.config(fg='black') if entry.get() == placeholder else None)
@@ -179,8 +206,13 @@ def main():
     tk.Button(frame, text='Start Agent', command=start_agent).grid(row=2, column=0)
     tk.Button(frame, text='Stop Agent', command=stop_agent).grid(row=2, column=1)
 
+    logging.info("Agent GUI initialized. Waiting for user actions.")
     root.mainloop()
 
-
+# === Crash catcher ===
 if __name__ == '__main__':
-    main()
+    try:
+        logging.info("Launching agent...")
+        main()
+    except Exception as e:
+        logging.error(f"Fatal error in agent: {e}")

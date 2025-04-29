@@ -116,9 +116,10 @@ def main():
         payload = {
             'hostname': hostname,
             'data': get_system_info(),
-            'packets': get_captured_packets()[:50],
+            # 'packets': get_captured_packets()[:50],
+            'packets': [],  
         }
-        logging.info(f"Sending {len(payload['packets'])} packets to server")
+        logging.info("Packet capture disabled – will be added later.")
 
         headers = {'Authorization': f'Bearer {token}'}
         try:

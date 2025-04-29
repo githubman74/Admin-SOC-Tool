@@ -59,17 +59,25 @@ def start_sniff(iface=None, bpf_filter=None):
     """
     Begin background packet capture.
     """
-    thread = threading.Thread(
-        target=sniff,
-        kwargs={
-            'prn': _process_packet,
-            'store': False,
-            'iface': iface,
-            'filter': bpf_filter,
-        },
-        daemon=True,
-    )
-    thread.start()
+    try:
+        thread = threading.Thread(
+            target=sniff,
+            kwargs={
+                'prn': _process_packet,
+                'store': False,
+                'iface': iface,
+                'filter': bpf_filter,
+            },
+            daemon=True,
+        )
+        thread.start()
+        return True
+    except PermissionError:
+        print("Packet capture failed: Permission denied. Requires root/admin privileges.")
+        return False
+    except Exception as e:
+        print(f"Packet capture error: {e}")
+        return False
 
 def get_captured_packets():
     """

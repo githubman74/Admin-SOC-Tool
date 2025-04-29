@@ -3,9 +3,9 @@ import sys
 import os
 
 # hide console window
-hwnd = ctypes.windll.kernel32.GetConsoleWindow()
-if hwnd:
-    ctypes.windll.user32.ShowWindow(hwnd, 0)
+# hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+# if hwnd:
+#     ctypes.windll.user32.ShowWindow(hwnd, 0)
 
 # ensure stdout/stderr have a fileno()
 for name in ('stdout', 'stderr'):
@@ -113,7 +113,16 @@ def main():
 
     def agent_loop():
         nonlocal running
-        start_sniff()  # Start capturing packets
+        try:
+            start_sniff()  # Start capturing packets
+            print("Packet capture started successfully")  # Optional debug message
+        except PermissionError:
+            print("Error: Insufficient permissions for packet capture. Please run as administrator/root.")
+            # Continue running without packet capture
+        except Exception as e:
+            print(f"Error starting packet capture: {e}")
+            # Continue running without packet capture
+        
         while running:
             send_system_info()
             time.sleep(1)

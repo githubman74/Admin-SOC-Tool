@@ -192,7 +192,7 @@ export default function SystemDashboard() {
   // Fetch approved agents
   const fetchApprovedAgents = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:8123/approved")
+      const response = await fetch("https://admin-server-33le.onrender.com/approved")
       if (response.ok) {
         const data = await response.json()
         const agents = Object.entries(data).map(([hostname, ip]) => ({
@@ -214,7 +214,7 @@ export default function SystemDashboard() {
     fetchApprovedAgents()
 
     // SSE for metrics
-    const eventSource = new EventSource("http://localhost:8123/metrics-stream")
+    const eventSource = new EventSource("https://admin-server-33le.onrender.com/metrics-stream")
     setConnectionStatus("connecting")
 
     eventSource.onmessage = (event) => {
